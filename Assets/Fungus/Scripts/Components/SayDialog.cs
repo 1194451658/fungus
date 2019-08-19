@@ -111,6 +111,8 @@ namespace Fungus
 			activeSayDialogs.Remove(this);
 		}
 			
+        // 获取挂载的Writer控件
+        // 没有的话添加
 		protected virtual Writer GetWriter()
         {
             if (writer != null)
@@ -143,6 +145,8 @@ namespace Fungus
             return canvasGroup;
         }
 
+        // 获取、添加
+        // WriterAudio控件
         protected virtual WriterAudio GetWriterAudio()
         {
             if (writerAudio != null)
@@ -250,12 +254,20 @@ namespace Fungus
         /// <summary>
         /// Returns a SayDialog by searching for one in the scene or creating one if none exists.
         /// </summary>
+
+        // 获取可以使用的SayDialog
+        // * 如果有ActiveSayDialog，则返回
+        // * 返回场景中，开启的SayDialogs中的第一个
+        // * 从Resources中加载prefab
         public static SayDialog GetSayDialog()
         {
             if (ActiveSayDialog == null)
             {
 				SayDialog sd = null;
 
+                // 获取
+                // 开启的第一个
+                // SayDialog
 				// Use first active Say Dialog in the scene (if any)
 				if (activeSayDialogs.Count > 0)
 				{
@@ -267,6 +279,8 @@ namespace Fungus
                     ActiveSayDialog = sd;
                 }
 
+                // 从Resources中获取
+                // SayDialog
                 if (ActiveSayDialog == null)
                 {
                     // Auto spawn a say dialog object from the prefab
@@ -325,44 +339,65 @@ namespace Fungus
         /// Sets the active speaking character.
         /// </summary>
         /// <param name="character">The active speaking character.</param>
+
+        // 设置对话的角色显示
+        //  * 设置名称
+        //  * 设置Stage上，对话的角色的，显示隐藏
         public virtual void SetCharacter(Character character)
         {
+            // 隐藏显示的角色
             if (character == null)
             {
+                // 清空角色显示
                 if (characterImage != null)
                 {
                     characterImage.gameObject.SetActive(false);
                 }
+
+                // 清空名称
                 if (NameText != null)
                 {
                     NameText = "";
                 }
+
                 speakingCharacter = null;
             }
             else
             {
+                // 设置新的对话角色
                 var prevSpeakingCharacter = speakingCharacter;
                 speakingCharacter = character;
 
                 // Dim portraits of non-speaking characters
+
+                // 遍历，
+                // 所有的Stage
                 var activeStages = Stage.ActiveStages;
                 for (int i = 0; i < activeStages.Count; i++)
                 {
                     var stage = activeStages[i];
                     if (stage.DimPortraits)
                     {
+                        // 遍历
+                        // Stage上的所有角色
                         var charactersOnStage = stage.CharactersOnStage;
                         for (int j = 0; j < charactersOnStage.Count; j++)
                         {
                             var c = charactersOnStage[j];
+
+                            // 是否有切换
+                            // 说话的角色
                             if (prevSpeakingCharacter != speakingCharacter)
                             {
+                                // 遍历到的角色
+                                // 不是当前说句的角色
                                 if (c != null && !c.Equals(speakingCharacter))
                                 {
                                     stage.SetDimmed(c, true);
                                 }
                                 else
                                 {
+                                    // 是当前说话的角色
                                     stage.SetDimmed(c, false);
                                 }
                             }
@@ -370,6 +405,8 @@ namespace Fungus
                     }
                 }
 
+                // 设置
+                // 当前说话的，角色名称
                 string characterName = character.NameText;
 
                 if (characterName == "")
@@ -392,6 +429,8 @@ namespace Fungus
                 return;
             }
 
+            // 显示和隐藏
+            // 角色图片
             if (image != null)
             {
                 characterImage.overrideSprite = image;
@@ -461,7 +500,15 @@ namespace Fungus
         /// <param name="stopVoiceover">Stop any existing voiceover audio before writing starts.</param>
         /// <param name="voiceOverClip">Voice over audio clip to play.</param>
         /// <param name="onComplete">Callback to execute when writing and player input have finished.</param>
-        public virtual void Say(string text, bool clearPrevious, bool waitForInput, bool fadeWhenDone, bool stopVoiceover, bool waitForVO, AudioClip voiceOverClip, Action onComplete)
+        public virtual void Say(
+            string text,
+            bool clearPrevious,
+            bool waitForInput,
+            bool fadeWhenDone,
+            bool stopVoiceover,
+            bool waitForVO,
+            AudioClip voiceOverClip,
+            Action onComplete)
         {
             StartCoroutine(DoSay(text, clearPrevious, waitForInput, fadeWhenDone, stopVoiceover, waitForVO, voiceOverClip, onComplete));
         }
@@ -476,8 +523,16 @@ namespace Fungus
         /// <param name="stopVoiceover">Stop any existing voiceover audio before writing starts.</param>
         /// <param name="voiceOverClip">Voice over audio clip to play.</param>
         /// <param name="onComplete">Callback to execute when writing and player input have finished.</param>
-        public virtual IEnumerator DoSay(string text, bool clearPrevious, bool waitForInput, bool fadeWhenDone, bool stopVoiceover, bool waitForVO, AudioClip voiceOverClip, Action onComplete)
+        public virtual IEnumerator DoSay(string text,
+            bool clearPrevious,
+            bool waitForInput,
+            bool fadeWhenDone,
+            bool stopVoiceover,
+            bool waitForVO,
+            AudioClip voiceOverClip,
+            Action onComplete)
         {
+            // 获取Writer控件
             var writer = GetWriter();
 
             if (writer.IsWriting || writer.IsWaitingForInput)
@@ -489,6 +544,8 @@ namespace Fungus
                 }
             }
 
+            // 是否关闭
+            // 其他的Say窗口
             if (closeOtherDialogs)
             {
                 for (int i = 0; i < activeSayDialogs.Count; i++)
@@ -500,12 +557,16 @@ namespace Fungus
                     }
                 }
             }
+
+            // 开启自己
             gameObject.SetActive(true);
 
             this.fadeWhenDone = fadeWhenDone;
 
             // Voice over clip takes precedence over a character sound effect if provided
 
+
+            // 获取播放的声音
             AudioClip soundEffectClip = null;
             if (voiceOverClip != null)
             {

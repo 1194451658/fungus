@@ -7,6 +7,9 @@ namespace Fungus
     /// <summary>
     /// Helper class for hiding the many, many ways we might want to show text to the user.
     /// </summary>
+
+    // 封装文本控件
+    // Text, InputField, TextMesh, TMP_Text, IWriterTextDestination
     public class TextAdapter : IWriterTextDestination
     {
         protected Text textUI;
@@ -19,6 +22,11 @@ namespace Fungus
         protected PropertyInfo textProperty;
         protected IWriterTextDestination writerTextDestination;
 
+        // 初始化
+        // 获取go上的
+        // Text、InputField、TextMesh、TMP_Text控件
+        // IWriterTextDestination控件
+        // 或其他，拥有text属性的控件
         public void InitFromGameObject(GameObject go, bool includeChildren = false)
         {
             if (go == null)
@@ -26,6 +34,9 @@ namespace Fungus
                 return;
             }
 
+            // 获取到go上的
+            // Text、InputField、TextMesh、TMP_Text控件
+            /// IWriterTextDestination控件
             if (!includeChildren)
             {
                 textUI = go.GetComponent<Text>();
@@ -38,6 +49,8 @@ namespace Fungus
             }
             else
             {
+                // 获取孩子上的所有，
+                // 上述控件
                 textUI = go.GetComponentInChildren<Text>();
                 inputField = go.GetComponentInChildren<InputField>();
                 textMesh = go.GetComponentInChildren<TextMesh>();
@@ -48,8 +61,13 @@ namespace Fungus
             }
             
             // Try to find any component with a text property
+            // 如果上述控件
+            // 都没有获取到
             if (textUI == null && inputField == null && textMesh == null && writerTextDestination == null)
             {
+
+                // 获下方通用的
+                // Component控件
                 Component[] allcomponents = null;
                 if (!includeChildren)
                     allcomponents = go.GetComponents<Component>();
@@ -58,6 +76,8 @@ namespace Fungus
 
                 for (int i = 0; i < allcomponents.Length; i++)
                 {
+                    // 判断，是否有
+                    // text属性
                     var c = allcomponents[i];
                     textProperty = c.GetType().GetProperty("text");
                     if (textProperty != null)
@@ -69,6 +89,8 @@ namespace Fungus
             }
         }
 
+        // 开启
+        // 富文本支持
         public void ForceRichText()
         {
             if (textUI != null)
@@ -96,6 +118,7 @@ namespace Fungus
             }
         }
 
+        // 设置字体控件的颜色
         public void SetTextColor(Color textColor)
         {
             if (textUI != null)
@@ -125,6 +148,7 @@ namespace Fungus
             }
         }
 
+        // 设置字体控件的alpha
         public void SetTextAlpha(float textAlpha)
         {
             if (textUI != null)
@@ -160,6 +184,8 @@ namespace Fungus
             }
         }
 
+        // 是否有获取到
+        // 一个文本控件
         public bool HasTextObject()
         {
             return (textUI != null || inputField != null || textMesh != null || textComponent != null ||
@@ -169,6 +195,7 @@ namespace Fungus
                  writerTextDestination != null);
         }
 
+        // 是否支持富文本
         public bool SupportsRichText()
         {
             if (textUI != null)
@@ -196,6 +223,8 @@ namespace Fungus
             return false;
         }
 
+        // 封装下方控件的
+        // text属性
         public virtual string Text
         {
             get

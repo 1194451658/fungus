@@ -12,6 +12,8 @@ namespace Fungus
     /// Attribute class for Fungus commands.
     /// </summary>
     /// 
+
+    // CommandInfo标签
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class CommandInfoAttribute : Attribute
     {
@@ -22,7 +24,11 @@ namespace Fungus
         /// <param name="commandName">The display name of the command.</param>
         /// <param name="helpText">Help information to display in the inspector.</param>
         /// <param name="priority">If two command classes have the same name, the one with highest priority is listed. Negative priority removess the command from the list.</param>///
-        public CommandInfoAttribute(string category, string commandName, string helpText, int priority = 0)
+        public CommandInfoAttribute(
+            string category,
+            string commandName,
+            string helpText,
+            int priority = 0)
         {
             this.Category = category;
             this.CommandName = commandName;
@@ -39,8 +45,12 @@ namespace Fungus
     /// <summary>
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
+
+    // Q: Command是MonoBehaviour
+    // 怎么添加上一个GameObject的？下边创建了多个GameObject?
     public abstract class Command : MonoBehaviour
     {
+        // 每个Command有个唯一id
         [FormerlySerializedAs("commandId")]
         [HideInInspector]
         [SerializeField] protected int itemId = -1; // Invalid flowchart item id
@@ -56,6 +66,7 @@ namespace Fungus
         protected List<Variable> referencedVariables = new List<Variable>();
 
         //used by var list adapter to highlight variables 
+        // 是否有引用变量
         public bool IsVariableReferenced(Variable variable)
         {
             return referencedVariables.Contains(variable) || HasReference(variable);
@@ -106,6 +117,8 @@ namespace Fungus
         /// <summary>
         /// Timer used to control appearance of executing icon in inspector.
         /// </summary>
+
+        // Q: ??
         public virtual float ExecutingIconTimer { get; set; }
 
         /// <summary>
@@ -118,6 +131,10 @@ namespace Fungus
         /// <summary>
         /// Returns the Flowchart that this command belongs to.
         /// </summary>
+
+        // 获取Flowchart
+        // 貌似的确是，在了Flowchart上
+        // 或者，在了Flowchart的孩子上
         public virtual Flowchart GetFlowchart()
         {
             var flowchart = GetComponent<Flowchart>();
@@ -140,6 +157,8 @@ namespace Fungus
         /// <summary>
         /// End execution of this command and continue execution at the next command.
         /// </summary>
+
+        // 执行自己后面的命令
         public virtual void Continue()
         {
             // This is a noop if the Block has already been stopped

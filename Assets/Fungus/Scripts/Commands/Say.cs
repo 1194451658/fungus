@@ -83,19 +83,27 @@ namespace Fungus
                 return;
             }
 
+            // 记录自己的
+            // 调用次数
             executionCount++;
 
+            // 角色上，是否有设置，
+            // 聊天窗口
             // Override the active say dialog if needed
             if (character != null && character.SetSayDialog != null)
             {
                 SayDialog.ActiveSayDialog = character.SetSayDialog;
             }
 
+            // 本Say命令上
+            // 是否有设置，对话面板
             if (setSayDialog != null)
             {
                 SayDialog.ActiveSayDialog = setSayDialog;
             }
 
+            // 获取到，
+            // 对话面板
             var sayDialog = SayDialog.GetSayDialog();
             if (sayDialog == null)
             {
@@ -105,29 +113,52 @@ namespace Fungus
     
             var flowchart = GetFlowchart();
 
+            // 打开对话面板
             sayDialog.SetActive(true);
 
+            // 设置对话的角色
             sayDialog.SetCharacter(character);
+
+            // 设置对话框内，
+            // 对话角色的头像
+            // 并调整文本大小和位置
             sayDialog.SetCharacterImage(portrait);
 
             string displayText = storyText;
 
+            // 遍历
+            // 自定义的Tag
+            // 根据设置，进行文本替换
             var activeCustomTags = CustomTag.activeCustomTags;
             for (int i = 0; i < activeCustomTags.Count; i++)
             {
                 var ct = activeCustomTags[i];
+
+                // 替换开始Tag
                 displayText = displayText.Replace(ct.TagStartSymbol, ct.ReplaceTagStartWith);
+
+                // 替换结束Tag
                 if (ct.TagEndSymbol != "" && ct.ReplaceTagEndWith != "")
                 {
                     displayText = displayText.Replace(ct.TagEndSymbol, ct.ReplaceTagEndWith);
                 }
             }
 
+            // 替换变量{$VarName}内容
             string subbedText = flowchart.SubstituteVariables(displayText);
 
-            sayDialog.Say(subbedText, !extendPrevious, waitForClick, fadeWhenDone, stopVoiceover, waitForVO, voiceOverClip, delegate {
-                Continue();
-            });
+            sayDialog.Say(
+                subbedText,
+                !extendPrevious,
+                waitForClick,
+                fadeWhenDone,
+                stopVoiceover,
+                waitForVO,
+                voiceOverClip,
+                delegate {
+                    Continue();
+                }
+            );
         }
 
         public override string GetSummary()

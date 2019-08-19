@@ -10,6 +10,8 @@ namespace Fungus
     /// Create custom tags for use in Say text.
     /// </summary>
     [ExecuteInEditMode]
+
+    // 自定义Tag设置
     public class CustomTag : MonoBehaviour
     {
         [Tooltip("String that defines the start of the tag.")]
@@ -24,6 +26,7 @@ namespace Fungus
         [Tooltip("String to replace the end tag with.")]
         [SerializeField] protected string replaceTagEndWith;
 
+        // 添加到，全局列表
         protected virtual void OnEnable()
         {
             if (!activeCustomTags.Contains(this))
@@ -32,6 +35,7 @@ namespace Fungus
             }
         }
         
+           // 从全局列表，移除
         protected virtual void OnDisable()
         {
             activeCustomTags.Remove(this);
@@ -39,6 +43,7 @@ namespace Fungus
 
         #region Public members
 
+        // 全局列表
         public static List<CustomTag> activeCustomTags = new List<CustomTag>();
 
         /// <summary>

@@ -12,6 +12,8 @@ namespace Fungus
     /// A Character that can be used in dialogue via the Say, Conversation and Portrait commands.
     /// </summary>
     [ExecuteInEditMode]
+
+    // 对话角色
     public class Character : MonoBehaviour, ILocalizable
     {
         [Tooltip("Character name as displayed in Say Dialog.")]
@@ -38,8 +40,10 @@ namespace Fungus
 
         protected PortraitState portaitState = new PortraitState();
 
+        // 静态变量
         protected static List<Character> activeCharacters = new List<Character>();
 
+        // 将自己加入到，全局列表
         protected virtual void OnEnable()
         {
             if (!activeCharacters.Contains(this))
@@ -48,6 +52,7 @@ namespace Fungus
             }
         }
 
+        // 从全局列表中，移除
         protected virtual void OnDisable()
         {
             activeCharacters.Remove(this);
