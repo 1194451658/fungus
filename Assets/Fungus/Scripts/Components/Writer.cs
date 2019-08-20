@@ -18,12 +18,16 @@ namespace Fungus
     {
         /// <summary> Invalid state. </summary>
         Invalid,
+
         /// <summary> Writer has started writing. </summary>
         Start,
+
         /// <summary> Writing has been paused. </summary>
         Pause,
+
         /// <summary> Writing has resumed after a pause. </summary>
         Resume,
+
         /// <summary> Writing has ended. </summary>
         End
     }
@@ -350,6 +354,7 @@ namespace Fungus
                     yield return StartCoroutine(DoWait(token.paramList));
                     break;
                     
+                // 等待输入
                 case TokenType.WaitForInputNoClear:
                     yield return StartCoroutine(DoWaitForInput(false));
                     break;
@@ -358,11 +363,13 @@ namespace Fungus
                     yield return StartCoroutine(DoWaitForInput(true));
                     break;
 
+                // 等待语音结束
                 case TokenType.WaitForVoiceOver:
                     yield return StartCoroutine(DoWaitVO());
                     break;
 
-                    case TokenType.WaitOnPunctuationStart:
+                // 等待标点
+                case TokenType.WaitOnPunctuationStart:
                     TryGetSingleParam(token.paramList, 0, punctuationPause, out currentPunctuationPause);
                     break;
                     
@@ -370,10 +377,13 @@ namespace Fungus
                     currentPunctuationPause = punctuationPause;
                     break;
                     
+                // 清屏
                 case TokenType.Clear:
                         textAdapter.Text = "";
                     break;
                     
+                // 更改
+                // 字符出现速度
                 case TokenType.SpeedStart:
                     TryGetSingleParam(token.paramList, 0, writingSpeed, out currentWritingSpeed);
                     break;
@@ -382,10 +392,12 @@ namespace Fungus
                     currentWritingSpeed = writingSpeed;
                     break;
                     
+                // 结束
                 case TokenType.Exit:
                     exitFlag = true;
                     break;
 
+                // 发送消息
                 case TokenType.Message:
                     if (CheckParamCount(token.paramList, 1)) 
                     {
@@ -393,6 +405,7 @@ namespace Fungus
                     }
                     break;
                     
+                // 震屏
                 case TokenType.VerticalPunch: 
                     {
                         float vintensity;
@@ -423,12 +436,14 @@ namespace Fungus
                     }
                     break;
                     
+                // 闪屏
                 case TokenType.Flash:
                     float flashDuration;
                     TryGetSingleParam(token.paramList, 0, 0.2f, out flashDuration);
                     Flash(flashDuration);
                     break;
 
+                // 播放音效
                 case TokenType.Audio: 
                     {
                         AudioSource audioSource = null;
@@ -443,6 +458,7 @@ namespace Fungus
                     }
                     break;
                     
+                // 循环播放音效
                 case TokenType.AudioLoop:
                     {
                         AudioSource audioSource = null;
@@ -458,6 +474,7 @@ namespace Fungus
                     }
                     break;
                     
+                // 暂停播放音效
                 case TokenType.AudioPause:
                     {
                         AudioSource audioSource = null;
@@ -472,6 +489,7 @@ namespace Fungus
                     }
                     break;
                     
+                // 停止播放音效
                 case TokenType.AudioStop:
                     {
                         AudioSource audioSource = null;
@@ -487,6 +505,8 @@ namespace Fungus
                     break;
                 }
 
+                // 记录当前的
+                // Token类型
                 previousTokenType = token.type;
 
                 if (exitFlag)
@@ -500,6 +520,7 @@ namespace Fungus
             isWaitingForInput = false;
             isWriting = false;
 
+            // 通知结束
             NotifyEnd(stopAudio);
 
             if (onComplete != null)
@@ -679,6 +700,8 @@ namespace Fungus
             }
         }
 
+        // 等待时间
+        // 只接受一个参数
         protected virtual IEnumerator DoWait(List<string> paramList)
         {
             var param = "";
@@ -687,12 +710,14 @@ namespace Fungus
                 param = paramList[0];
             }
 
+            // 解析参数
             float duration = 1f;
             if (!Single.TryParse(param, out duration))
             {
                 duration = 1f;
             }
 
+            // 等待时间
             yield return StartCoroutine( DoWait(duration) );
         }
 
