@@ -93,6 +93,7 @@ namespace Fungus
                 }
             }
 
+            // 区分点击模式
             switch (clickMode)
             {
             case ClickMode.Disabled:
@@ -117,6 +118,8 @@ namespace Fungus
                 ignoreClickTimer = Mathf.Max (ignoreClickTimer - Time.deltaTime, 0f);
             }
 
+            // 有Menu菜单的时候
+            // 是否忽略点击事件
             if (ignoreMenuClicks)
             {
                 // Ignore input events if a Menu is being displayed
@@ -128,6 +131,11 @@ namespace Fungus
                     nextLineInputFlag = false;
                 }
             }
+
+            //  ----------------------------
+            //      通知Writer
+            //    Writer继承自IDialogInputListener
+            //  ----------------------------
 
             // Tell any listeners to move to the next line
             if (nextLineInputFlag)
@@ -174,6 +182,9 @@ namespace Fungus
         /// <summary>
         /// Sets the button clicked flag.
         /// </summary>
+
+        // SayDialog上的
+        // 编辑器中设置的，点击按钮后，调用
         public virtual void SetButtonClickedFlag()
         {
             // Only applies if clicking is not disabled

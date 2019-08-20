@@ -65,6 +65,9 @@ namespace Fungus
 
         protected float currentWritingSpeed;
         protected float currentPunctuationPause;
+
+        // 封装文本控件
+        // Text, InputField, TextMesh, TMP_Text, IWriterTextDestination
         protected TextAdapter textAdapter = new TextAdapter();
 
         protected bool boldActive = false;
@@ -89,6 +92,9 @@ namespace Fungus
         protected string hiddenColorClose = "";
 
         protected int visibleCharacterCount = 0;
+
+        // WriterAudio
+        // 和SayDialog, Writer，挂载在一起
         public WriterAudio AttachedWriterAudio { get; set; }
 
         protected virtual void Awake()
@@ -99,7 +105,14 @@ namespace Fungus
                 go = gameObject;
             }
 
+            // 初始化
+            // TextAdapter
             textAdapter.InitFromGameObject(go);
+
+            // 
+            // 获取所有的
+            // WriterListener
+            // 
 
             // Cache the list of child writer listeners
             var allComponents = GetComponentsInChildren<Component>();
@@ -113,9 +126,15 @@ namespace Fungus
                 }
             }
 
+            // 根据hiddenTextColor
+            // 初始化hiddenColorOpen, hiddenColorClose
             CacheHiddenColorStrings();
         }
 
+        //
+        // 根据hiddenTextColor
+        // 初始化hiddenColorOpen, hiddenColorClose
+        //
         protected virtual void CacheHiddenColorStrings()
         {
             // Cache the hidden color string
@@ -126,16 +145,21 @@ namespace Fungus
 
         protected virtual void Start()
         {
+            // 是否开启
+            // 富文本
             if (forceRichText)
             {
                 textAdapter.ForceRichText();
             }
         }
         
+        // 设置OpenString
         protected virtual void UpdateOpenMarkup()
         {
             openString.Length = 0;
             
+            // 检查是否
+            // 支持富文本
             if (textAdapter.SupportsRichText())
             {
                 if (sizeActive)
@@ -144,16 +168,19 @@ namespace Fungus
                     openString.Append(sizeValue);
                     openString.Append(">"); 
                 }
+
                 if (colorActive)
                 {
                     openString.Append("<color=");
                     openString.Append(colorText);
                     openString.Append(">"); 
                 }
+
                 if (boldActive)
                 {
                     openString.Append("<b>"); 
                 }
+
                 if (italicActive)
                 {
                     openString.Append("<i>"); 
@@ -161,6 +188,7 @@ namespace Fungus
             }
         }
         
+        // 设置CloseString
         protected virtual void UpdateCloseMarkup()
         {
             closeString.Length = 0;
@@ -186,6 +214,7 @@ namespace Fungus
             }
         }
 
+        // 检查paramList的个数是count
         protected virtual bool CheckParamCount(List<string> paramList, int count) 
         {
             if (paramList == null)
@@ -201,6 +230,8 @@ namespace Fungus
             return true;
         }
 
+        // 将paramList中index处参数
+        // 当做single来解析
         protected virtual bool TryGetSingleParam(List<string> paramList, int index, float defaultValue, out float value) 
         {
             value = defaultValue;
@@ -212,6 +243,7 @@ namespace Fungus
             return false;
         }
 
+        // 处理Token序列
         protected virtual IEnumerator ProcessTokens(List<TextTagToken> tokens, bool stopAudio, Action onComplete)
         {
             // Reset control members
@@ -229,8 +261,11 @@ namespace Fungus
 
             TokenType previousTokenType = TokenType.Invalid;
 
+            // 开始，
+            // 遍历所有Token
             for (int i = 0; i < tokens.Count; ++i)
             {
+                // 持续保持暂停
                 // Pause between tokens if Paused is set
                 while (Paused)
                 {
@@ -245,6 +280,9 @@ namespace Fungus
                 // Update the read ahead string buffer. This contains the text for any 
                 // Word tags which are further ahead in the list. 
                 readAheadString.Length = 0;
+
+                // 向后查看Token
+                // 获取到所有的Words Token
                 for (int j = i + 1; j < tokens.Count; ++j)
                 {
                     var readAheadToken = tokens[j];
@@ -262,49 +300,52 @@ namespace Fungus
 
                 switch (token.type)
                 {
+                // 显示文本
                 case TokenType.Words:
                     yield return StartCoroutine(DoWords(token.paramList, previousTokenType));
                     break;
                     
+                // 处理<b></b>
                 case TokenType.BoldStart:
                     boldActive = true;
                     break;
-                    
                 case TokenType.BoldEnd:
                     boldActive = false;
                     break;
                     
+                // 处理斜体
                 case TokenType.ItalicStart:
                     italicActive = true;
                     break;
-                    
                 case TokenType.ItalicEnd:
                     italicActive = false;
                     break;
                     
+                // 处理颜色
                 case TokenType.ColorStart:
                     if (CheckParamCount(token.paramList, 1)) 
                     {
                         colorActive = true;
+                        // 取出颜色参数
                         colorText = token.paramList[0];
                     }
                     break;
-                    
                 case TokenType.ColorEnd:
                     colorActive = false;
                     break;
 
+                // 处理Size标签
                 case TokenType.SizeStart:
                     if (TryGetSingleParam(token.paramList, 0, 16f, out sizeValue))
                     {
                         sizeActive = true;
                     }
                     break;
-
                 case TokenType.SizeEnd:
                     sizeActive = false;
                     break;
 
+                // 等待
                 case TokenType.Wait:
                     yield return StartCoroutine(DoWait(token.paramList));
                     break;
@@ -467,6 +508,7 @@ namespace Fungus
             }
         }
 
+        // 显示文本
         protected virtual IEnumerator DoWords(List<string> paramList, TokenType previousTokenType)
         {
             if (!CheckParamCount(paramList, 1))
@@ -474,8 +516,13 @@ namespace Fungus
                 yield break;
             }
 
+            // 替换\n
             string param = paramList[0].Replace("\\n", "\n");
 
+            //  ----------------------
+            //  如果是从头显示
+            //  清除掉开头的空白字符
+            //  ----------------------
             // Trim whitespace after a {wc} or {c} tag
             if (previousTokenType == TokenType.WaitForInputAndClear ||
                 previousTokenType == TokenType.Clear)
@@ -496,6 +543,8 @@ namespace Fungus
 
             float timeAccumulator = Time.deltaTime;
 
+            // 遍历文本的
+            // 所有字符
             for (int i = 0; i < param.Length + 1; ++i)
             {
                 // Exit immediately if the exit flag has been set
@@ -510,10 +559,15 @@ namespace Fungus
                     yield return null;
                 }
 
+                // 分割文本
+                // 一个字符一个字符显示，还是一个单词一个单词显示
                 PartitionString(writeWholeWords, param, i);
+
+                // 生成最后要显示的文本
                 ConcatenateString(startText);
                 textAdapter.Text = outputString.ToString();
 
+                // 通知文本被更新
                 NotifyGlyph();
 
                 // No delay if user has clicked and Instant Complete is enabled
@@ -522,6 +576,7 @@ namespace Fungus
                     continue;
                 }
 
+                // 标点符号时候的等待
                 // Punctuation pause
                 if (leftString.Length > 0 && 
                     rightString.Length > 0 &&
@@ -545,9 +600,14 @@ namespace Fungus
             }
         }
 
+        // 分割文本
+        // 一个字符一个字符显示，还是一个单词一个单词显示
+        // i: 处理inputString中的，第几字符
         protected virtual void PartitionString(bool wholeWords, string inputString, int i)
         {
+            // 处理后，左侧的文本
             leftString.Length = 0;
+            // 处理后，右侧的文本
             rightString.Length = 0;
 
             // Reached last character
@@ -579,11 +639,15 @@ namespace Fungus
             }
         }
 
+        // 生成最后要显示的文本
         protected virtual void ConcatenateString(string startText)
         {
             outputString.Length = 0;
 
             // string tempText = startText + openText + leftText + closeText;
+
+            // 构造
+            // 最后要显示的，字符串
             outputString.Append(startText);
             outputString.Append(openString);
             outputString.Append(leftString);
@@ -592,6 +656,11 @@ namespace Fungus
             // Track how many visible characters are currently displayed so
             // we can easily extract the visible portion again later.
             visibleCharacterCount = outputString.Length;
+
+            // 构造
+            // 右侧，被隐藏的文本！
+            // 这里隐藏的文本也一起显示
+            // 应该是在文本逐次出现的时候，排版不会发生变化
 
             // Make right hand side text hidden
             if (textAdapter.SupportsRichText() &&
@@ -627,6 +696,8 @@ namespace Fungus
             yield return StartCoroutine( DoWait(duration) );
         }
 
+        // 等待
+        // 说话语音的结束
         protected virtual IEnumerator DoWaitVO()
         {
             float duration = 0f;
@@ -639,13 +710,16 @@ namespace Fungus
             yield return StartCoroutine(DoWait(duration));
         }
 
+        // 等待多长时间
         protected virtual IEnumerator DoWait(float duration)
         {
+            // 通知暂停
             NotifyPause();
 
             float timeRemaining = duration;
             while (timeRemaining > 0f && !exitFlag)
             {
+                // Q: 立刻显示出所有文本？
                 if (instantComplete && inputFlag)
                 {
                     break;
@@ -655,16 +729,20 @@ namespace Fungus
                 yield return null;
             }
 
+            // 通知重新开始
             NotifyResume();
         }
 
+        // 等待输入
         protected virtual IEnumerator DoWaitForInput(bool clear)
         {
+            // 通知暂停
             NotifyPause();
 
             inputFlag = false;
             isWaitingForInput = true;
 
+            // 等待输入
             while (!inputFlag && !exitFlag)
             {
                 yield return null;
@@ -678,9 +756,12 @@ namespace Fungus
                 textAdapter.Text = "";
             }
 
+            // 通知
+            // 重新运行
             NotifyResume();
         }
         
+        // 是否是标点符号
         protected virtual bool IsPunctuation(char character)
         {
             return character == '.' || 
@@ -692,6 +773,7 @@ namespace Fungus
                     character == ')';
         }
         
+        // 震屏
         protected virtual void Punch(Vector3 axis, float time)
         {
             GameObject go = punchObject;
@@ -706,6 +788,7 @@ namespace Fungus
             }
         }
         
+        // 闪屏实现
         protected virtual void Flash(float duration)
         {
             var cameraManager = FungusManager.Instance.CameraManager;
@@ -717,6 +800,8 @@ namespace Fungus
             });
         }
         
+        // 根据名称
+        // 查找有AudioSource的GameObject
         protected virtual AudioSource FindAudio(string audioObjectName)
         {
             GameObject go = GameObject.Find(audioObjectName);
@@ -728,6 +813,7 @@ namespace Fungus
             return go.GetComponent<AudioSource>();
         }
 
+        // 通知输入
         protected virtual void NotifyInput()
         {
             WriterSignals.DoWriterInput(this);
@@ -739,6 +825,7 @@ namespace Fungus
             }
         }
 
+        // 通知Start
         protected virtual void NotifyStart(AudioClip audioClip)
         {
             WriterSignals.DoWriterState(this, WriterState.Start);
@@ -750,10 +837,15 @@ namespace Fungus
             }
         }
 
+        // 通知暂停
         protected virtual void NotifyPause()
         {
+            // 通知
+            // 状态变化
             WriterSignals.DoWriterState(this, WriterState.Pause);
 
+            // 通知
+            // 所有的WriterListener
             for (int i = 0; i < writerListeners.Count; i++)
             {
                 var writerListener = writerListeners[i];
@@ -761,10 +853,15 @@ namespace Fungus
             }
         }
 
+        // 通知Resume
         protected virtual void NotifyResume()
         {
+            // 通知
+            // 状态变化
             WriterSignals.DoWriterState(this, WriterState.Resume);
 
+            // 通知
+            // 所有的WriterListener
             for (int i = 0; i < writerListeners.Count; i++)
             {
                 var writerListener = writerListeners[i];
@@ -772,10 +869,15 @@ namespace Fungus
             }
         }
 
+        // 通知结束
         protected virtual void NotifyEnd(bool stopAudio)
         {
+            // 通知
+            // 状态变化
             WriterSignals.DoWriterState(this, WriterState.End);
 
+            // 通知
+            // 所有的WriterListener
             for (int i = 0; i < writerListeners.Count; i++)
             {
                 var writerListener = writerListeners[i];
@@ -860,11 +962,13 @@ namespace Fungus
                 tokenText += "{wvo}";
             }
 
-
+            // 解析文本
+            // 成Token
             List<TextTagToken> tokens = TextTagParser.Tokenize(tokenText);
 
             gameObject.SetActive(true);
 
+            // 开始依次执行Token
             yield return StartCoroutine(ProcessTokens(tokens, stopAudio, onComplete));
         }
 
@@ -877,8 +981,6 @@ namespace Fungus
         {
             textAdapter.SetTextAlpha(textAlpha);
         }
-
-
 
         #endregion
 

@@ -17,17 +17,22 @@ namespace Fungus
         [Tooltip("Duration to fade dialogue in/out")]
         [SerializeField] protected float fadeDuration = 0.25f;
 
+        // 继续按钮
         [Tooltip("The continue button UI object")]
         [SerializeField] protected Button continueButton;
 
         [Tooltip("The canvas UI object")]
         [SerializeField] protected Canvas dialogCanvas;
 
+        // 名称文本的控件
         [Tooltip("The name text UI object")]
         [SerializeField] protected Text nameText;
+
         [Tooltip("TextAdapter will search for appropriate output on this GameObject if nameText is null")]
         [SerializeField] protected GameObject nameTextGO;
+
         protected TextAdapter nameTextAdapter = new TextAdapter();
+
         public virtual string NameText
         {
             get
@@ -40,10 +45,13 @@ namespace Fungus
             }
         }
 
+        // 对话文本的控件
         [Tooltip("The story text UI object")]
         [SerializeField] protected Text storyText;
+
         [Tooltip("TextAdapter will search for appropriate output on this GameObject if storyText is null")]
         [SerializeField] protected GameObject storyTextGO;
+
         protected TextAdapter storyTextAdapter = new TextAdapter();
         public virtual string StoryText
         {
@@ -56,6 +64,10 @@ namespace Fungus
                 storyTextAdapter.Text = value;
             }
         }
+
+
+        // 对话文本的
+        // RectTransform
         public virtual RectTransform StoryTextRectTrans
         {
             get
@@ -64,34 +76,44 @@ namespace Fungus
             }
         }
 
+        // 显示角色的Image
         [Tooltip("The character UI object")]
         [SerializeField] protected Image characterImage;
         public virtual Image CharacterImage { get { return characterImage; } }
     
+        // 防止对话文本，和
+        // 角色的Image重叠
         [Tooltip("Adjust width of story text when Character Image is displayed (to avoid overlapping)")]
         [SerializeField] protected bool fitTextWithImage = true;
 
+        // 是否关闭其他的对话框
         [Tooltip("Close any other open Say Dialogs when this one is active")]
         [SerializeField] protected bool closeOtherDialogs;
 
         protected float startStoryTextWidth; 
         protected float startStoryTextInset;
 
+        // 控制播放3种音效
         protected WriterAudio writerAudio;
+
         protected Writer writer;
+
         protected CanvasGroup canvasGroup;
 
         protected bool fadeWhenDone = true;
         protected float targetAlpha = 0f;
         protected float fadeCoolDownTimer = 0f;
 
+        // 当前角色图片
         protected Sprite currentCharacterImage;
 
+        // 当前说话的角色
         // Most recent speaking character
         protected static Character speakingCharacter;
 
         protected StringSubstituter stringSubstituter = new StringSubstituter();
 
+        // 全局列表
 		// Cache active Say Dialogs to avoid expensive scene search
 		protected static List<SayDialog> activeSayDialogs = new List<SayDialog>();
 

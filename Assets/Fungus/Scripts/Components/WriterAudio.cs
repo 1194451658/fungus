@@ -20,15 +20,21 @@ namespace Fungus
     /// <summary>
     /// Manages audio effects for Dialogs.
     /// </summary>
+
+    // WriterAudio
+    // 和SayDialog, Writer，挂载在一起
     public class WriterAudio : MonoBehaviour, IWriterListener
     {
+        // 音量
         [Tooltip("Volume level of writing sound effects")]
         [Range(0,1)]
         [SerializeField] protected float volume = 1f;
 
+        // 循环
         [Tooltip("Loop the audio when in Sound Effect mode. Has no effect in Beeps mode.")]
         [SerializeField] protected bool loop = true;
 
+        // 音源
         // If none is specifed then we use any AudioSource on the gameobject, and if that doesn't exist we create one.
         [Tooltip("AudioSource to use for playing sound effects. If none is selected then one will be created.")]
         [SerializeField] protected AudioSource targetAudioSource;
@@ -36,6 +42,10 @@ namespace Fungus
         [Tooltip("Type of sound effect to play when writing text")]
         [SerializeField] protected AudioMode audioMode = AudioMode.Beeps;
 
+        // 3类声音
+
+        // 文本一个字符一个字符出现
+        // 的beep声音
         [Tooltip("List of beeps to randomly select when playing beep sound effects. Will play maximum of one beep per character, with only one beep playing at a time.")]
         [SerializeField] protected List<AudioClip> beepSounds = new List<AudioClip>();
 
@@ -59,6 +69,7 @@ namespace Fungus
         protected float nextBeepTime;
 
 
+        // 音源还剩多长时间
         public float GetSecondsRemaining()
         {
             if (IsPlayingVoiceOver)
@@ -71,6 +82,7 @@ namespace Fungus
             }
         }
 
+        // 声音模式
         protected virtual void SetAudioMode(AudioMode mode)
         {
             audioMode = mode;
@@ -78,6 +90,7 @@ namespace Fungus
 
         protected virtual void Awake()
         {
+            // 获取/添加AudioSource控件
             // Need to do this in Awake rather than Start due to init order issues
             if (targetAudioSource == null)
             {
@@ -91,8 +104,11 @@ namespace Fungus
             targetAudioSource.volume = 0f;
         }
 
+        // 播放音源文件
         protected virtual void Play(AudioClip audioClip)
         {
+            // 检查是否有
+            // 可播放声音
             if (targetAudioSource == null ||
                 (audioMode == AudioMode.SoundEffect && soundEffect == null && audioClip == null) ||
                 (audioMode == AudioMode.Beeps && beepSounds.Count == 0))
@@ -104,6 +120,8 @@ namespace Fungus
             targetAudioSource.volume = 0f;
             targetVolume = volume;
 
+            // 是否是
+            // 播放audioClip
             if (audioClip != null)
             {
                 // Voice over clip provided
@@ -111,6 +129,9 @@ namespace Fungus
                 targetAudioSource.loop = loop;
                 targetAudioSource.Play();
             }
+
+            // 是否是
+            // 播放soundEffect
             else if (audioMode == AudioMode.SoundEffect &&
                      soundEffect != null)
             {
@@ -119,6 +140,9 @@ namespace Fungus
                 targetAudioSource.loop = loop;
                 targetAudioSource.Play();
             }
+
+            // 是否是
+            // 播放beep
             else if (audioMode == AudioMode.Beeps)
             {
                 // Use beeps defined in WriterAudio
@@ -139,6 +163,8 @@ namespace Fungus
             targetVolume = 0f;
         }
 
+        // 停止播放
+        // 音量变0
         protected virtual void Stop()
         {
             if (targetAudioSource == null)
@@ -154,6 +180,9 @@ namespace Fungus
             playingVoiceover = false;
         }
 
+
+        // 开始播放
+        // 是音量重新开启！
         protected virtual void Resume()
         {
             if (targetAudioSource == null)
@@ -164,6 +193,7 @@ namespace Fungus
             targetVolume = volume;
         }
 
+        // 实时设置音量
         protected virtual void Update()
         {
             targetAudioSource.volume = Mathf.MoveTowards(targetAudioSource.volume, targetVolume, Time.deltaTime * 5f);
@@ -215,8 +245,12 @@ namespace Fungus
             }
         }
 
+        // 播放beep音效
         public virtual void OnGlyph()
         {
+            // 如果在播放文本语音
+            // 则退出
+            // 不播放beep
             if (playingVoiceover)
             {
                 return;
@@ -224,10 +258,13 @@ namespace Fungus
 
             if (playBeeps && beepSounds.Count > 0)
             {
+                // 音源没有在播放
                 if (!targetAudioSource.isPlaying)
                 {
+                    // 达到，下一次beep时间
                     if (nextBeepTime < Time.realtimeSinceStartup)
                     {
+                        // 随机选择个beep声音
                         targetAudioSource.clip = beepSounds[Random.Range(0, beepSounds.Count)];
 
                         if (targetAudioSource.clip != null)
@@ -236,6 +273,7 @@ namespace Fungus
                             targetVolume = volume;
                             targetAudioSource.Play();
 
+                            // 设置下一次beep时间
                             float extend = targetAudioSource.clip.length;
                             nextBeepTime = Time.realtimeSinceStartup + extend;
                         }
@@ -244,6 +282,8 @@ namespace Fungus
             }
         }
 
+        // 开始播放
+        // voiceOverClip
         public virtual void OnVoiceover(AudioClip voiceOverClip)
         {
             if (targetAudioSource == null)

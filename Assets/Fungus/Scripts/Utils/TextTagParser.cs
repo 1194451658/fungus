@@ -10,10 +10,17 @@ namespace Fungus
     /// <summary>
     /// Parses a string for special Fungus text tags.
     /// </summary>
+
+    // Fungus自己的Narrative Text Tag
+    // 富文本解析器
     public static class TextTagParser
     {
+        // Q: 后面有个问号是
+        // lazy匹配
         const string TextTokenRegexString = @"\{.*?\}";
 
+        // 添加成Word Token
+        // paramList: 只有一个参数，就是要显示的文本
         private static void AddWordsToken(List<TextTagToken> tokenList, string words)
         {
             TextTagToken token = new TextTagToken();
@@ -23,8 +30,11 @@ namespace Fungus
             tokenList.Add(token);
         }
         
+        // 添加{} Token
         private static void AddTagToken(List<TextTagToken> tokenList, string tagText)
         {
+            // 检查
+            // 最基本格式
             if (tagText.Length < 3 ||
                 tagText.Substring(0,1) != "{" ||
                 tagText.Substring(tagText.Length - 1,1) != "}")
@@ -35,8 +45,12 @@ namespace Fungus
             string tag = tagText.Substring(1, tagText.Length - 2);
             
             var type = TokenType.Invalid;
+
+            // 根据等号、逗号，
+            // 分割到参数
             List<string> parameters = ExtractParameters(tag);
             
+            // 粗体
             if (tag == "b")
             {
                 type = TokenType.BoldStart;
@@ -45,6 +59,8 @@ namespace Fungus
             {
                 type = TokenType.BoldEnd;
             }
+
+            // 斜体
             else if (tag == "i")
             {
                 type = TokenType.ItalicStart;
@@ -53,6 +69,8 @@ namespace Fungus
             {
                 type = TokenType.ItalicEnd;
             }
+
+            // 颜色
             else if (tag.StartsWith("color="))
             {
                 type = TokenType.ColorStart;
@@ -61,6 +79,8 @@ namespace Fungus
             {
                 type = TokenType.ColorEnd;
             }
+
+            // 大小
             else if (tag.StartsWith("size="))
             {
                 type = TokenType.SizeStart;
@@ -69,6 +89,8 @@ namespace Fungus
             {
                 type = TokenType.SizeEnd;
             }
+
+            // 等待输入
             else if (tag == "wi")
             {
                 type = TokenType.WaitForInputNoClear;
@@ -77,10 +99,15 @@ namespace Fungus
             {
                 type = TokenType.WaitForInputAndClear;
             }
+
+            // 等待语音结束
             else if (tag == "wvo")
             {
                 type = TokenType.WaitForVoiceOver;
             }
+
+            // 标点符号上
+            // 等待多少时间
             else if (tag.StartsWith("wp="))
             {
                 type = TokenType.WaitOnPunctuationStart;
@@ -93,6 +120,8 @@ namespace Fungus
             {
                 type = TokenType.WaitOnPunctuationEnd;
             }
+
+            // 等待
             else if (tag.StartsWith("w="))
             {
                 type = TokenType.Wait;
@@ -101,10 +130,14 @@ namespace Fungus
             {
                 type = TokenType.Wait;
             }
+
+            // 清除
             else if (tag == "c")
             {
                 type = TokenType.Clear;
             }
+
+            // 播放速度
             else if (tag.StartsWith("s="))
             {
                 type = TokenType.SpeedStart;
@@ -117,14 +150,20 @@ namespace Fungus
             {
                 type = TokenType.SpeedEnd;
             }
+
+            // 退出
             else if (tag == "x")
             {
                 type = TokenType.Exit;
             }
+
+            // 发送消息
             else if (tag.StartsWith("m="))
             {
                 type = TokenType.Message;
             }
+
+            // 震屏
             else if (tag.StartsWith("vpunch") ||
                      tag.StartsWith("vpunch="))
             {
@@ -140,11 +179,15 @@ namespace Fungus
             {
                 type = TokenType.Punch;
             }
+
+            // 闪屏
             else if (tag.StartsWith("flash") ||
                      tag.StartsWith("flash="))
             {
                 type = TokenType.Flash;
             }
+
+            // 音频
             else if (tag.StartsWith("audio="))
             {
                 type = TokenType.Audio;
@@ -175,8 +218,12 @@ namespace Fungus
             }
         }
 
+        //
+        // 使用等号，逗号，进行分割后
+        //
         private static List<string> ExtractParameters(string input)
         {
+            // 使用"="进行分隔
             List<string> paramsList = new List<string>();
             int index = input.IndexOf('=');
             if (index == -1)
@@ -184,10 +231,13 @@ namespace Fungus
                 return paramsList;
             }
 
+            // =号后面
+            // 再用逗号"," 分隔
             string paramsStr = input.Substring(index + 1);
             var splits = paramsStr.Split(',');
             for (int i = 0; i < splits.Length; i++)
             {
+                // 分隔出参数
                 var p = splits[i];
                 paramsList.Add(p.Trim());
             }
@@ -248,16 +298,20 @@ namespace Fungus
                 string preText = storyText.Substring(position, m.Index - position);
                 string tagText = m.Value;
 
+                // {}Token之前的文本
                 if (preText != "")
                 {
                     AddWordsToken(tokens, preText);
                 }
+
                 AddTagToken(tokens, tagText);
 
                 position = m.Index + tagText.Length;
                 m = m.NextMatch();
             }
 
+            // 添加最后
+            // 剩余的文本
             if (position < storyText.Length)
             {
                 string postText = storyText.Substring(position, storyText.Length - position);
