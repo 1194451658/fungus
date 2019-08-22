@@ -11,6 +11,7 @@ namespace Fungus
     /// Contains all options to run a portrait command.
     /// </summary>
 
+    // Portrait命令的
     // 各种参数
     public class PortraitOptions
     {

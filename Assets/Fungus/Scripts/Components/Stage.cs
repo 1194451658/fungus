@@ -12,39 +12,54 @@ namespace Fungus
     /// Define a set of screen positions where character sprites can be displayed.
     /// </summary>
     [ExecuteInEditMode]
+
+    // 只有变量设置
+    // 没有特别多数
+    // 函数功能，在PortraitController中实现
     public class Stage : PortraitController
     {
         [Tooltip("Canvas object containing the stage positions.")]
         [SerializeField] protected Canvas portraitCanvas;
 
+        // 不说话的时
+        // 将角色变暗
         [Tooltip("Dim portraits when a character is not speaking.")]
         [SerializeField] protected bool dimPortraits;
 
+        // 变暗时的颜色
         [Tooltip("Choose a dimColor")]
         [SerializeField] protected Color dimColor =new Color(0.5f, 0.5f, 0.5f, 1f);
 
+        // 角色，显示/隐藏时间
         [Tooltip("Duration for fading character portraits in / out.")]
         [SerializeField] protected float fadeDuration = 0.5f;
 
+        // 角色移动时间
         [Tooltip("Duration for moving characters to a new position")]
         [SerializeField] protected float moveDuration = 1f;
 
+        // 变暗的缓动
         [Tooltip("Ease type for the fade tween.")]
         [SerializeField] protected LeanTweenType fadeEaseType;
 
+        // Q: shift操作
         [Tooltip("Constant offset to apply to portrait position.")]
         [SerializeField] protected Vector2 shiftOffset;
 
+        // 角色默认出现位置
         [Tooltip("The position object where characters appear by default.")]
         [SerializeField] protected Image defaultPosition;
 
+        // 定义的各个位置
         [Tooltip("List of stage position rect transforms in the stage.")]
         [SerializeField] protected List<RectTransform> positions;
 
         protected List<Character> charactersOnStage = new List<Character>();
 
+        // 全局列表
         protected static List<Stage> activeStages = new List<Stage>();
 
+        // 加入到全局列表
         protected virtual void OnEnable()
         {
             if (!activeStages.Contains(this))
@@ -53,6 +68,7 @@ namespace Fungus
             }
         }
 
+        // 从全局列表移除
         protected virtual void OnDisable()
         {
             activeStages.Remove(this);
@@ -60,6 +76,7 @@ namespace Fungus
 
         protected virtual void Start()
         {
+            // 开启Stage的Canvas
             if (Application.isPlaying &&
                 portraitCanvas != null)
             {
@@ -73,11 +90,15 @@ namespace Fungus
         /// <summary>
         /// Gets the list of active stages.
         /// </summary>
+
+        // 获取全局列表
         public static List<Stage> ActiveStages { get { return activeStages; } }
 
         /// <summary>
         /// Returns the currently active stage.
         /// </summary>
+
+        // 获取第一个可用Stage
         public static Stage GetActiveStage()
         {
             if (Stage.activeStages == null ||

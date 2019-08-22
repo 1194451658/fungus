@@ -8,10 +8,11 @@ namespace Fungus
 {
     public class ControlWithDisplay<TDisplayEnum> : Command
     {
+        // 显示操作枚举
         [Tooltip("Display type")]
         [SerializeField] protected TDisplayEnum display;
 
-        // 判断枚举名称
+        // 判断显示操作枚举
         // 是不是None
         protected virtual bool IsDisplayNone<TEnum>(TEnum enumValue)
         {
@@ -21,6 +22,7 @@ namespace Fungus
 
         #region Public members
 
+        // 获取当前显示操作枚举
         public virtual TDisplayEnum Display { get { return display; } }
 
         #endregion

@@ -16,31 +16,39 @@ namespace Fungus
     // 对话角色
     public class Character : MonoBehaviour, ILocalizable
     {
+        // 角色名称
         [Tooltip("Character name as displayed in Say Dialog.")]
         [SerializeField] protected string nameText; // We need a separate name as the object name is used for character variations (e.g. "Smurf Happy", "Smurf Sad")
 
+        // 角色名称颜色
         [Tooltip("Color to display the character name in Say Dialog.")]
         [SerializeField] protected Color nameColor = Color.white;
 
+        // Q: 是对话语音？
         [Tooltip("Sound effect to play when this character is speaking.")]
         [SerializeField] protected AudioClip soundEffect;
 
+        // 角色不同形象
         [Tooltip("List of portrait images that can be displayed for this character.")]
         [SerializeField] protected List<Sprite> portraits;
 
+        // 角色朝向
         [Tooltip("Direction that portrait sprites face.")]
         [SerializeField] protected FacingDirection portraitsFace;
 
+        // 为角色指定
+        // 特定对话面板
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. This Say Dialog will be used whenever the character speaks.")]
         [SerializeField] protected SayDialog setSayDialog;
 
+        // 注释
         [FormerlySerializedAs("notes")]
         [TextArea(5,10)]
         [SerializeField] protected string description;
 
         protected PortraitState portaitState = new PortraitState();
 
-        // 静态变量
+        // 全局列表
         protected static List<Character> activeCharacters = new List<Character>();
 
         // 将自己加入到，全局列表
@@ -116,6 +124,10 @@ namespace Fungus
         /// <summary>
         /// Returns true if the character name starts with the specified string. Case insensitive.
         /// </summary>
+
+        //
+        // 检查，名称是否是某开头
+        //
         public virtual bool NameStartsWith(string matchString)
         {
 #if NETFX_CORE
@@ -131,6 +143,8 @@ namespace Fungus
         /// Looks for a portrait by name on a character
         /// If none is found, give a warning and return a blank sprite
         /// </summary>
+
+        // 获得到Portrait
         public virtual Sprite GetPortrait(string portraitString)
         {
             if (String.IsNullOrEmpty(portraitString))
@@ -152,6 +166,7 @@ namespace Fungus
 
         #region ILocalizable implementation
 
+        // 多语言相关
         public virtual string GetStandardText()
         {
             return nameText;

@@ -11,10 +11,16 @@ namespace Fungus
     [CommandInfo("Narrative", 
                  "Portrait", 
                  "Controls a character portrait.")]
+
+    // DisplayType:  显示操作枚举
+    //  * 显示
+    //  * 隐藏
+    //  * 替换
+    //  * 移动到最前方
     public class Portrait : ControlWithDisplay<DisplayType>
     {
-        [Tooltip("Stage to display portrait on")]
         // 展示角色的舞台
+        [Tooltip("Stage to display portrait on")]
         [SerializeField] protected Stage stage;
 
         // 要展示的角色
@@ -25,7 +31,7 @@ namespace Fungus
         [Tooltip("Character to swap with")]
         [SerializeField] protected Character replacedCharacter;
 
-        // Q: ?
+        // 展示哪个Portrait
         [Tooltip("Portrait to display")]
         [SerializeField] protected Sprite portrait;
 
@@ -41,17 +47,22 @@ namespace Fungus
         [Tooltip("Direction character is facing")]
         [SerializeField] protected FacingDirection facing;
 
+        // 是否使用，
+        // 下面2个默认的时间值
+        // 还是自定义时间值
         [Tooltip("Use Default Settings")]
         [SerializeField] protected bool useDefaultSettings = true;
 
+        // 隐藏时间
         [Tooltip("Fade Duration")]
         [SerializeField] protected float fadeDuration = 0.5f;
 
+        // 移动时间
         [Tooltip("Movement Duration")]
         [SerializeField] protected float moveDuration = 1f;
 
+        // Q: Shift操作??
         [Tooltip("Shift Offset")]
-        // Q: ??
         [SerializeField] protected Vector2 shiftOffset;
 
         [Tooltip("Move portrait into new position")]
