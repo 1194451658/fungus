@@ -29,6 +29,8 @@ namespace Fungus
     /// <summary>
     /// Directions that character portraits can face.
     /// </summary>
+
+    // 朝向
     public enum FacingDirection
     {
         /// <summary> Unknown direction </summary>
@@ -42,6 +44,8 @@ namespace Fungus
     /// <summary>
     /// Offset direction for position.
     /// </summary>
+
+    // 偏移方向
     public enum PositionOffset
     {
         /// <summary> Unknown offset direction. </summary>
@@ -677,6 +681,7 @@ namespace Fungus
         /// </summary>
         public virtual void Hide(PortraitOptions options)
         {
+            // 清理和检查参数
             CleanPortraitOptions(options);
 
             if (options.character.State.display == DisplayType.None)
@@ -684,17 +689,26 @@ namespace Fungus
                 return;
             }
 
+            // 设置角色Portrait的朝向
             SetupPortrait(options);
-
+                
+            // 防止0
             // LeanTween doesn't handle 0 duration properly
             float duration = (options.fadeDuration > 0f) ? options.fadeDuration : float.Epsilon;
 
-            LeanTween.alpha(options.character.State.portraitImage.rectTransform, 0f, duration).setEase(stage.FadeEaseType).setRecursive(false);
+            LeanTween.
+                alpha(options.character.State.portraitImage.rectTransform, 0f, duration).
+                setEase(stage.FadeEaseType).
+                setRecursive(false);
 
+            // 移动角色形象
+            // 到目标点
             DoMoveTween(options);
 
+            // 从列表中移除
             stage.CharactersOnStage.Remove(options.character);
 
+            // 更新角色的状态
             //update character state after hiding
             options.character.State.onScreen = false;
             options.character.State.portrait = options.portrait;
@@ -702,6 +716,8 @@ namespace Fungus
             options.character.State.position = options.toPosition;
             options.character.State.display = DisplayType.Hide;
 
+            // 立即执行onComplete
+            // 还是fade结束后，调用
             FinishCommand(options);
         }
 
