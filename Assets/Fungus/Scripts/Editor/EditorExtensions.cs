@@ -26,12 +26,19 @@ namespace Fungus.EditorUtils
             if (baseType == null)
                 Debug.LogError("Base type must be defined");
 
+            //
+            // 从Assembly中，
+            // 过滤类型
+            //
             // Iterate through all available types in the assembly
-            var types = assembly.GetTypes().Where(type =>
-                {
+            var types = assembly.GetTypes().Where(
+                type => {
+                    // 判断，是否是类
                     if (classOnly && !type.IsClass)
                         return false;
                     
+                    // 目标类型是接口
+                    // 查看，是否实现了接口
                     if (baseType.IsInterface)
                     {
                         var it = type.GetInterface(baseType.FullName);
@@ -39,6 +46,8 @@ namespace Fungus.EditorUtils
                         if (it != null)
                             return true;
                     }
+
+                    // 查看，是否是子类
                     else if (type.IsSubclassOf(baseType))
                     {
                         return true;
@@ -61,6 +70,7 @@ namespace Fungus.EditorUtils
         /// <returns></returns>
         public static System.Type[] FindDerivedTypes(System.Type baseType, bool classOnly = true)
         {
+            // 在BaseType所在的Assembly中查找
             return FindDerivedTypesFromAssembly(System.Reflection.Assembly.GetAssembly(baseType), baseType, classOnly);
         }
     }

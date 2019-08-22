@@ -13,14 +13,19 @@ namespace Fungus
     {
         /// <summary> == mathematical operator.</summary>
         Equals,
+
         /// <summary> != mathematical operator.</summary>
         NotEquals,
+
         /// <summary> < mathematical operator.</summary>
         LessThan,
+
         /// <summary> > mathematical operator.</summary>
         GreaterThan,
+
         /// <summary> <= mathematical operator.</summary>
         LessThanOrEquals,
+
         /// <summary> >= mathematical operator.</summary>
         GreaterThanOrEquals
     }
@@ -32,14 +37,19 @@ namespace Fungus
     {
         /// <summary> = operator. </summary>
         Assign,
+
         /// <summary> =! operator. </summary>
         Negate,
+
         /// <summary> += operator. </summary>
         Add,
+
         /// <summary> -= operator. </summary>
         Subtract,
+
         /// <summary> *= operator. </summary>
         Multiply,
+
         /// <summary> /= operator. </summary>
         Divide
     }

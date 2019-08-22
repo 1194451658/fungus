@@ -113,6 +113,9 @@ namespace Fungus
 
         // There must be an Event System in the scene for Say and Menu input to work.
         // This method will automatically instantiate one if none exists.
+
+        // 确保拥有
+        // EventSystem
         protected virtual void CheckEventSystem()
         {
             if (eventSystemPresent)
@@ -1064,6 +1067,7 @@ namespace Fungus
         {
             if (hideComponents)
             {
+                // 隐藏所有Block
                 var blocks = GetComponents<Block>();
                 for (int i = 0; i < blocks.Length; i++)
                 {
@@ -1075,6 +1079,7 @@ namespace Fungus
                     }
                 }
 
+                // 隐藏所有Commands
                 var commands = GetComponents<Command>();
                 for (int i = 0; i < commands.Length; i++)
                 {
@@ -1082,6 +1087,8 @@ namespace Fungus
                     command.hideFlags = HideFlags.HideInInspector;
                 }
 
+                // 隐藏所有
+                // EventHandler
                 var eventHandlers = GetComponents<EventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
@@ -1091,6 +1098,7 @@ namespace Fungus
             }
             else
             {
+                // 显示所有
                 var monoBehaviours = GetComponents<MonoBehaviour>();
                 for (int i = 0; i < monoBehaviours.Length; i++)
                 {

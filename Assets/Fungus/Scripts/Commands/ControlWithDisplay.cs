@@ -11,6 +11,8 @@ namespace Fungus
         [Tooltip("Display type")]
         [SerializeField] protected TDisplayEnum display;
 
+        // 判断枚举名称
+        // 是不是None
         protected virtual bool IsDisplayNone<TEnum>(TEnum enumValue)
         {
             string displayTypeStr = Enum.GetName(typeof (TEnum), enumValue);

@@ -62,11 +62,15 @@ namespace Fungus
 
         protected Stage stage;
 
+
+        // Q: Stage继承自PortraitController
+        // 这里还获取Stage
         protected virtual void Awake()
         {
             stage = GetComponentInParent<Stage>();
         }
 
+        // PortraitOptions: 各种参数
         protected virtual void FinishCommand(PortraitOptions options)
         {
             if (options.onComplete != null)
@@ -77,11 +81,14 @@ namespace Fungus
                 }
                 else
                 {
+                    // 是，waitUntilFinished
+                    // 就是延迟FadeDuration调用回调
                     StartCoroutine(WaitUntilFinished(options.fadeDuration, options.onComplete));
                 }
             }
             else
             {
+                // onComplete == null !
                 StartCoroutine(WaitUntilFinished(options.fadeDuration));
             }
         }
@@ -91,6 +98,9 @@ namespace Fungus
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
+
+        // 清理和检查参数
+        // PortraitOptions
         protected virtual PortraitOptions CleanPortraitOptions(PortraitOptions options)
         {
             // Use default stage settings
@@ -209,6 +219,8 @@ namespace Fungus
             character.State.portraitImage = portraitImage;
         }
 
+        // 延迟duration, 
+        // 调用onComplete
         protected virtual IEnumerator WaitUntilFinished(float duration, Action onComplete = null)
         {
             // Wait until the timer has expired
@@ -230,10 +242,13 @@ namespace Fungus
             }
         }
 
+        // 改变Portrait的方向？
         protected virtual void SetupPortrait(PortraitOptions options)
         {
+            // 拷贝RectTransform数值
             SetRectTransform(options.character.State.portraitImage.rectTransform, options.fromPosition);
 
+            // Q: 怎么没看到更新facing变量？
             if (options.character.State.facing != options.character.PortraitsFace)
             {
                 options.character.State.portraitImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
@@ -243,6 +258,7 @@ namespace Fungus
                 options.character.State.portraitImage.rectTransform.localScale = new Vector3(1f, 1f, 1f);
             }
 
+            // Q:??
             if (options.facing != options.character.PortraitsFace)
             {
                 options.character.State.portraitImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
@@ -253,7 +269,11 @@ namespace Fungus
             }
         }
 
-        protected virtual void DoMoveTween(Character character, RectTransform fromPosition, RectTransform toPosition, float moveDuration, Boolean waitUntilFinished)
+        protected virtual void DoMoveTween(Character character,
+            RectTransform fromPosition,
+            RectTransform toPosition,
+            float moveDuration,
+            Boolean waitUntilFinished)
         {
             PortraitOptions options = new PortraitOptions(true);
             options.character = character;
@@ -273,7 +293,11 @@ namespace Fungus
             float duration = (options.moveDuration > 0f) ? options.moveDuration : float.Epsilon;
 
             // LeanTween.move uses the anchoredPosition, so all position images must have the same anchor position
-            LeanTween.move(options.character.State.portraitImage.gameObject, options.toPosition.position, duration).setEase(stage.FadeEaseType);
+            LeanTween.move(
+                options.character.State.portraitImage.gameObject,
+                options.toPosition.position,
+                duration)
+            .setEase(stage.FadeEaseType);
 
             if (options.waitUntilFinished)
             {
@@ -286,6 +310,8 @@ namespace Fungus
         /// <summary>
         /// Performs a deep copy of all values from one RectTransform to another.
         /// </summary>
+
+        // 拷贝RectTransform数值
         public static void SetRectTransform(RectTransform oldRectTransform, RectTransform newRectTransform)
         {
             oldRectTransform.eulerAngles = newRectTransform.eulerAngles;
@@ -304,10 +330,14 @@ namespace Fungus
         /// </summary>
         /// <param name="options">Portrait Options</param>
         /// <param name="onComplete">The function that will run once the portrait command finishes</param>
+
+        // 执行Portrait命令
         public virtual void RunPortraitCommand(PortraitOptions options, Action onComplete)
         {
             waitTimer = 0f;
 
+            // 判断提前结束
+            // 情况1
             // If no character specified, do nothing
             if (options.character == null)
             {
@@ -315,6 +345,8 @@ namespace Fungus
                 return;
             }
 
+            // 判断提前结束
+            // 情况2
             // If Replace and no replaced character specified, do nothing
             if (options.display == DisplayType.Replace && options.replacedCharacter == null)
             {
@@ -322,6 +354,8 @@ namespace Fungus
                 return;
             }
 
+            // 判断提前结束
+            // 情况3
             // Early out if hiding a character that's already hidden
             if (options.display == DisplayType.Hide &&
                 !options.character.State.onScreen)
@@ -330,6 +364,7 @@ namespace Fungus
                 return;
             }
 
+            // 清理参数
             options = CleanPortraitOptions(options);
             options.onComplete = onComplete;
 
@@ -426,10 +461,13 @@ namespace Fungus
         /// <param name="options"></param>
         public virtual void Show(PortraitOptions options)
         {
+            // 清理和检查参数
             options = CleanPortraitOptions(options);
 
+            // Q:??这个选项含义
             if (options.shiftIntoPlace)
             {
+                // Q: fromPosition从toPosition进行的复制
                 options.fromPosition = Instantiate(options.toPosition) as RectTransform;
                 if (options.offset == PositionOffset.OffsetLeft)
                 {
@@ -449,6 +487,7 @@ namespace Fungus
                 }
             }
 
+            // Q: 改变Portrait的朝向？
             SetupPortrait(options);
 
             // LeanTween doesn't handle 0 duration properly
@@ -457,6 +496,8 @@ namespace Fungus
             // Fade out a duplicate of the existing portrait image
             if (options.character.State.portraitImage != null && options.character.State.portraitImage.overrideSprite != null)
             {
+                // Q: 直接复制了Image的GameObject?
+                // portraitImage是Image类型
                 GameObject tempGO = GameObject.Instantiate(options.character.State.portraitImage.gameObject);
                 tempGO.transform.SetParent(options.character.State.portraitImage.transform, false);
                 tempGO.transform.localPosition = Vector3.zero;
@@ -467,9 +508,14 @@ namespace Fungus
                 tempImage.preserveAspect = true;
                 tempImage.color = options.character.State.portraitImage.color;
 
-                LeanTween.alpha(tempImage.rectTransform, 0f, duration).setEase(stage.FadeEaseType).setOnComplete(() => {
-                    Destroy(tempGO);
-                }).setRecursive(false);
+                // 动画效果
+                LeanTween.alpha(tempImage.rectTransform, 0f, duration)
+                    .setEase(stage.FadeEaseType)
+                    .setOnComplete(
+                        () => {
+                            Destroy(tempGO);
+                        })
+                    .setRecursive(false);
             }
 
             // Fade in the new sprite image

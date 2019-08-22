@@ -14,14 +14,18 @@ namespace Fungus
     public class Portrait : ControlWithDisplay<DisplayType>
     {
         [Tooltip("Stage to display portrait on")]
+        // 展示角色的舞台
         [SerializeField] protected Stage stage;
 
+        // 要展示的角色
         [Tooltip("Character to display")]
         [SerializeField] protected Character character;
 
+        // Q: ?
         [Tooltip("Character to swap with")]
         [SerializeField] protected Character replacedCharacter;
 
+        // Q: ?
         [Tooltip("Portrait to display")]
         [SerializeField] protected Sprite portrait;
 
@@ -47,6 +51,7 @@ namespace Fungus
         [SerializeField] protected float moveDuration = 1f;
 
         [Tooltip("Shift Offset")]
+        // Q: ??
         [SerializeField] protected Vector2 shiftOffset;
 
         [Tooltip("Move portrait into new position")]
@@ -112,6 +117,9 @@ namespace Fungus
 
         public override void OnEnter()
         {
+            //
+            // 获取到舞台
+            //
             // Selected "use default Portrait Stage"
             if (stage == null)
             {
@@ -126,6 +134,9 @@ namespace Fungus
 
             }
 
+            // DisplayType枚举，
+            // 设置的是否是None
+
             // If no display specified, do nothing
             if (IsDisplayNone(display))
             {
@@ -134,7 +145,8 @@ namespace Fungus
             }
 
             PortraitOptions options = new PortraitOptions();
-            
+
+            // 填写Portrait命令参数
             options.character = character;
             options.replacedCharacter = replacedCharacter;
             options.portrait = portrait;
@@ -151,6 +163,7 @@ namespace Fungus
             options.shiftIntoPlace = shiftIntoPlace;
             options.waitUntilFinished = waitUntilFinished;
 
+            // Stage运行，Portrait命令
             stage.RunPortraitCommand(options, Continue);
             
         }

@@ -39,6 +39,9 @@ namespace Fungus
     {   
         [HideInInspector]
         [FormerlySerializedAs("parentSequence")]
+
+        // 所属的Block
+        // 也就是，要执行的那个Block
         [SerializeField] protected Block parentBlock;
 
         #region Public members

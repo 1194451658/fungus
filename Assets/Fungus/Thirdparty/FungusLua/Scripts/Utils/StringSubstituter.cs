@@ -16,6 +16,7 @@ namespace Fungus
     /// </summary>
     public class StringSubstituter : IStringSubstituter
     {
+        // 全局列表
         protected static List<ISubstitutionHandler> substitutionHandlers = new List<ISubstitutionHandler>();
 
         /// <summary>
@@ -27,6 +28,8 @@ namespace Fungus
 
         #region Public members
 
+        // 注册全局
+        // ISubstitutionHandler
         public static void RegisterHandler(ISubstitutionHandler handler)
         {
             if (!substitutionHandlers.Contains(handler))
@@ -35,6 +38,8 @@ namespace Fungus
             }
         }
 
+        // 去除注册
+        // ISubstitutionHandler
         public static void UnregisterHandler(ISubstitutionHandler handler)
         {
             substitutionHandlers.Remove(handler);

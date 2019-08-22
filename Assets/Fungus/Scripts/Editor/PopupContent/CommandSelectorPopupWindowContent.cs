@@ -11,6 +11,7 @@ namespace Fungus.EditorUtils
     /// </summary>
     public class CommandSelectorPopupWindowContent : BasePopupWindowContent
     {
+        // 同一Assembly中，过滤到的Command
         static List<System.Type> _commandTypes;
         static List<System.Type> CommandTypes
         {
@@ -23,6 +24,8 @@ namespace Fungus.EditorUtils
             }
         }
 
+        // 获取同一Assembly中
+        // 继承了Command的类
         static void CacheCommandTypes()
         {
             _commandTypes = EditorExtensions.FindDerivedTypes(typeof(Command)).Where(x => !x.IsAbstract).ToList();
@@ -64,7 +67,6 @@ namespace Fungus.EditorUtils
         {
             curBlock = block;
 
-
             if (!FungusEditorPreferences.useLegacyMenus)
             {
                 var win = new CommandSelectorPopupWindowContent(currentHandlerName,
@@ -81,6 +83,7 @@ namespace Fungus.EditorUtils
             DoOlderMenu();
         }
 
+        // 获取到，支持的命令列表
         protected static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
         {
             List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes);

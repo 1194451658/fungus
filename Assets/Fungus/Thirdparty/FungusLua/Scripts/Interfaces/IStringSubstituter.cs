@@ -8,6 +8,8 @@ namespace Fungus
     /// <summary>
     /// Replaces special tokens in a string with substituted values (typically variables or localisation strings).
     /// </summary>
+
+    // 替换变量、本地化文本
     public interface IStringSubstituter
     {
         /// <summary>

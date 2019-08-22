@@ -316,12 +316,18 @@ namespace Fungus.EditorUtils
                 lastCMDpopupPos.x += EditorGUIUtility.labelWidth;
                 lastCMDpopupPos.y += EditorGUIUtility.singleLineHeight * 2;
             }
+
             // Add Button
+            // 添加按钮
             if (GUILayout.Button(addIcon))
             {
-                CommandSelectorPopupWindowContent.ShowCommandMenu(lastCMDpopupPos, "", target as Block,
+                CommandSelectorPopupWindowContent.ShowCommandMenu(
+                    lastCMDpopupPos,
+                    "",
+                    target as Block,
                     (int)(EditorGUIUtility.currentViewWidth),
-                    (int)(EditorWindow.focusedWindow.position.height - lastCMDpopupPos.y));
+                    (int)(EditorWindow.focusedWindow.position.height - lastCMDpopupPos.y)
+                );
             }
 
             // Duplicate Button

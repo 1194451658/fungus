@@ -10,6 +10,8 @@ namespace Fungus
     /// <summary>
     /// Contains all options to run a portrait command.
     /// </summary>
+
+    // 各种参数
     public class PortraitOptions
     {
         public Character character;

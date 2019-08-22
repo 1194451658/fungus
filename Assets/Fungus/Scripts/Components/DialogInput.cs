@@ -9,6 +9,8 @@ namespace Fungus
     /// <summary>
     /// Supported modes for clicking through a Say Dialog.
     /// </summary>
+
+    // 点击模式
     public enum ClickMode
     {
         /// <summary> Clicking disabled. </summary>
@@ -35,6 +37,8 @@ namespace Fungus
         [Tooltip("Allow holding Cancel to fast forward text")]
         [SerializeField] protected bool cancelEnabled = true;
 
+        // 有Menu选择出现的时候
+        // 是否忽略点击
         [Tooltip("Ignore input if a Menu dialog is currently active")]
         [SerializeField] protected bool ignoreMenuClicks = true;
 
@@ -42,6 +46,8 @@ namespace Fungus
 
         protected bool nextLineInputFlag;
 
+        // 防连点时间
+        // 连点面板
         protected float ignoreClickTimer;
 
         protected StandaloneInputModule currentStandaloneInputModule;
@@ -57,6 +63,8 @@ namespace Fungus
 
         // There must be an Event System in the scene for Say and Menu input to work.
         // This method will automatically instantiate one if none exists.
+
+        // 确保拥有EventSystem
         protected virtual void CheckEventSystem()
         {
             EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
@@ -71,7 +79,8 @@ namespace Fungus
                 }
             }
         }
-            
+
+        // 更新
         protected virtual void Update()
         {
             if (EventSystem.current == null)
@@ -79,11 +88,14 @@ namespace Fungus
                 return;
             }
 
+            // Q: 为什么是要获取StandaloneInputModule控件？
+            // 自带的prefab上，挂载的是StandaloneInputModule控件？！
             if (currentStandaloneInputModule == null)
             {
                 currentStandaloneInputModule = EventSystem.current.GetComponent<StandaloneInputModule>();
             }
 
+            // Q: 是快速跳过？
             if (writer != null && writer.IsWriting)
             {
                 if (Input.GetButtonDown(currentStandaloneInputModule.submitButton) ||
@@ -98,12 +110,17 @@ namespace Fungus
             {
             case ClickMode.Disabled:
                 break;
+
+            // 点击任意位置
             case ClickMode.ClickAnywhere:
                 if (Input.GetMouseButtonDown(0))
                 {
                     SetNextLineFlag();
                 }
                 break;
+
+            // 是否已经标记，对话面板被点击了
+            // 则触发，Next Line Flag
             case ClickMode.ClickOnDialog:
                 if (dialogClickedFlag)
                 {
@@ -113,6 +130,8 @@ namespace Fungus
                 break;
             }
 
+            // 是否已经标记，对话面板被点击了
+            // 则触发，Next Line Flag
             if (ignoreClickTimer > 0f)
             {
                 ignoreClickTimer = Mathf.Max (ignoreClickTimer - Time.deltaTime, 0f);
@@ -163,6 +182,8 @@ namespace Fungus
         /// <summary>
         /// Set the dialog clicked flag (usually from an Event Trigger component in the dialog UI).
         /// </summary>
+
+        // 标记点击了对话面板
         public virtual void SetDialogClickedFlag()
         {
             // Ignore repeat clicks for a short time to prevent accidentally clicking through the character dialogue
