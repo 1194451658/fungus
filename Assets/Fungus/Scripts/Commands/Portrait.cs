@@ -20,6 +20,7 @@ namespace Fungus
     public class Portrait : ControlWithDisplay<DisplayType>
     {
         // 展示角色的舞台
+        // OnEnter的时候查找
         [Tooltip("Stage to display portrait on")]
         [SerializeField] protected Stage stage;
 

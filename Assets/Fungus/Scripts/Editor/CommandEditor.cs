@@ -203,6 +203,8 @@ namespace Fungus.EditorUtils
         }
 
         
+        // property: 要赋值的go
+        // objectList: 可供选择的列表
         public static void ObjectField<T>(SerializedProperty property, GUIContent label, GUIContent nullLabel, List<T> objectList) where T : Object 
         {
             if (property == null)
@@ -212,6 +214,7 @@ namespace Fungus.EditorUtils
 
             List<GUIContent> objectNames = new List<GUIContent>();
 
+            // 得到property指向的Transform
             T selectedObject = property.objectReferenceValue as T;
 
             int selectedIndex = -1; // Invalid index
@@ -223,11 +226,16 @@ namespace Fungus.EditorUtils
                 selectedIndex = 0;
             }
 
+            // 遍历选择列表
             for (int i = 0; i < objectList.Count; ++i)
             {
                 if (objectList[i] == null) continue;
+
+                // 添加选择列表go，的名称
                 objectNames.Add(new GUIContent(objectList[i].name));
 
+                // 确定
+                // 当前是否已经选择
                 if (selectedObject == objectList[i])
                 {
                     selectedIndex = i + 1;
@@ -236,6 +244,8 @@ namespace Fungus.EditorUtils
 
             T result;
             
+            // 弹出Pop菜单
+            // 进行选择
             selectedIndex = EditorGUILayout.Popup(label, selectedIndex, objectNames.ToArray());
 
             if (selectedIndex == -1)
@@ -249,9 +259,12 @@ namespace Fungus.EditorUtils
             }
             else
             {
+                // 根据Pop菜单
+                // 设置新的选择
                 result = objectList[selectedIndex - 1];
             }
 
+            // 回传给属性
             property.objectReferenceValue = result;
         }
 
