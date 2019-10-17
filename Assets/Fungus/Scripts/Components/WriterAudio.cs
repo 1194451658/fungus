@@ -9,6 +9,8 @@ namespace Fungus
     /// <summary>
     /// Type of audio effect to play.
     /// </summary>
+
+    // 播放的语音的模式
     public enum AudioMode
     {
         /// <summary> Use short beep sound effects. </summary>
@@ -49,22 +51,31 @@ namespace Fungus
         [Tooltip("List of beeps to randomly select when playing beep sound effects. Will play maximum of one beep per character, with only one beep playing at a time.")]
         [SerializeField] protected List<AudioClip> beepSounds = new List<AudioClip>();
 
+        // 哪个声音？
+        // AudioMode是SoundEffect时候的声音
         [Tooltip("Long playing sound effect to play when writing text")]
         [SerializeField] protected AudioClip soundEffect;
 
+        // 输入声音
+        // 点击继续的声音？
         [Tooltip("Sound effect to play on user input (e.g. a click)")]
         [SerializeField] protected AudioClip inputSound;
 
         protected float targetVolume = 0f;
 
+        // 单个文字出现的时候
+        // 是否播放Beep
         // When true, a beep will be played on every written character glyph
         protected bool playBeeps;
 
+        // 标记，
+        // 是否在播放语音
         // True when a voiceover clip is playing
         protected bool playingVoiceover = false;
 
         public bool IsPlayingVoiceOver { get { return playingVoiceover; } }
 
+        // Q: ???
         // Time when current beep will have finished playing
         protected float nextBeepTime;
 
@@ -82,7 +93,7 @@ namespace Fungus
             }
         }
 
-        // 声音模式
+        // 设置声音模式
         protected virtual void SetAudioMode(AudioMode mode)
         {
             audioMode = mode;
@@ -107,8 +118,8 @@ namespace Fungus
         // 播放音源文件
         protected virtual void Play(AudioClip audioClip)
         {
-            // 检查是否有
-            // 可播放声音
+            // 检查
+            // 是否有音源，可播放的声音
             if (targetAudioSource == null ||
                 (audioMode == AudioMode.SoundEffect && soundEffect == null && audioClip == null) ||
                 (audioMode == AudioMode.Beeps && beepSounds.Count == 0))
@@ -116,12 +127,17 @@ namespace Fungus
                 return;
             }
 
+            // 标记
+            // 不是播放voiceover
             playingVoiceover = false;
+
+            // 设置声音0
+            // Q: 这里声音设置0是？
             targetAudioSource.volume = 0f;
             targetVolume = volume;
 
-            // 是否是
-            // 播放audioClip
+            // 有传入audioClip
+            // 则播放
             if (audioClip != null)
             {
                 // Voice over clip provided
@@ -130,8 +146,8 @@ namespace Fungus
                 targetAudioSource.Play();
             }
 
-            // 是否是
-            // 播放soundEffect
+            // 设置的是soundEffect
+            // 则播放
             else if (audioMode == AudioMode.SoundEffect &&
                      soundEffect != null)
             {
@@ -141,8 +157,8 @@ namespace Fungus
                 targetAudioSource.Play();
             }
 
-            // 是否是
-            // 播放beep
+            // 设置的是beep
+            // 则播放
             else if (audioMode == AudioMode.Beeps)
             {
                 // Use beeps defined in WriterAudio
@@ -152,6 +168,7 @@ namespace Fungus
             }
         }
 
+        // Q: 暂停是音量成0?
         protected virtual void Pause()
         {
             if (targetAudioSource == null)
@@ -182,7 +199,7 @@ namespace Fungus
 
 
         // 开始播放
-        // 是音量重新开启！
+        // Q: 是音量重新开启！
         protected virtual void Resume()
         {
             if (targetAudioSource == null)
@@ -193,7 +210,7 @@ namespace Fungus
             targetVolume = volume;
         }
 
-        // 实时设置音量
+        // 音量是渐变的
         protected virtual void Update()
         {
             targetAudioSource.volume = Mathf.MoveTowards(targetAudioSource.volume, targetVolume, Time.deltaTime * 5f);
@@ -256,6 +273,7 @@ namespace Fungus
                 return;
             }
 
+            // 有设置Beep
             if (playBeeps && beepSounds.Count > 0)
             {
                 // 音源没有在播放
@@ -291,11 +309,17 @@ namespace Fungus
                 return;
             }
 
+            // 标记，播放中
             playingVoiceover = true;
 
+            // 音量
             targetAudioSource.volume = volume;
             targetVolume = volume;
+
+            // 不循环
             targetAudioSource.loop = false;
+
+            // 播放
             targetAudioSource.clip = voiceOverClip;
             targetAudioSource.Play();
         }

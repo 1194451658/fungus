@@ -301,7 +301,12 @@ namespace Fungus
                         break;
                     }
                 }
+                    
 
+                // 这里有时间长度的操作，都是Coroutine操作
+                // 一路从SayDialog.DoSay
+                //  * Writer.Write
+                //      * Writer.ProcessTokens
                 switch (token.type)
                 {
                 // 显示文本
@@ -946,6 +951,8 @@ namespace Fungus
             if (isWriting || isWaitingForInput)
             {
                 exitFlag = true;
+
+                
             }
         }
 
@@ -993,7 +1000,8 @@ namespace Fungus
 
             gameObject.SetActive(true);
 
-            // 开始依次执行Token
+            // 开始
+            // 依次执行Token
             yield return StartCoroutine(ProcessTokens(tokens, stopAudio, onComplete));
         }
 

@@ -79,20 +79,25 @@ namespace Fungus.EditorUtils
                 return;
             }
 
+            // 获取到，要显示的Block
             var block = blockInspector.block;
             if (block == null)
             {
                 return;
             }
 
+            // 获取到Block的Flowchart
             var flowchart = (Flowchart)block.GetFlowchart();
 
+            // 检查，
+            // 是否只选中了一个Block
             if (flowchart.SelectedBlocks.Count > 1)
             {
                 GUILayout.Label("Multiple blocks selected");
                 return;
             }
 
+            // 创建BlockEditor
             if (activeBlockEditor == null ||
                 !block.Equals(activeBlockEditor.target))
             {
@@ -105,7 +110,12 @@ namespace Fungus.EditorUtils
             float width = EditorGUIUtility.currentViewWidth;
 
             blockScrollPos = GUILayout.BeginScrollView(blockScrollPos, GUILayout.Height(flowchart.BlockViewHeight));
+
+            // 显示Block名称
             activeBlockEditor.DrawBlockName(flowchart);
+
+            // 显示Inspector上方的
+            // Block的界面
             activeBlockEditor.DrawBlockGUI(flowchart);
             GUILayout.EndScrollView();
 
@@ -149,6 +159,8 @@ namespace Fungus.EditorUtils
 
             EditorGUILayout.Space();
 
+            // 显示
+            // 向上箭头、向下箭头， 添加、复制、删除按钮
             activeBlockEditor.DrawButtonToolbar();
 
             commandScrollPos = GUILayout.BeginScrollView(commandScrollPos);

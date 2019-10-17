@@ -108,8 +108,11 @@ namespace Fungus.EditorUtils
                     showOptionalFields = false; 
                 }
             }
+
             if (t.Display != DisplayType.None && t._Character != null && showOptionalFields) 
             {
+                // 不是隐藏，不是移动到前方
+                // 也就是：显示，替换操作
                 if (t.Display != DisplayType.Hide && t.Display != DisplayType.MoveToFront) 
                 {
                     // PORTRAIT
@@ -136,15 +139,19 @@ namespace Fungus.EditorUtils
                 }
                 else
                 {
+                    // 是隐藏，
+                    // 或者，移动到前方操作
                     t._Portrait = null;
                     t.Facing = FacingDirection.None;
                 }
+
                 string toPositionPrefix = "";
                 if (t.Move)
                 {
                     // MOVE
                     EditorGUILayout.PropertyField(moveProp);
                 }
+
                 if (t.Move)
                 {
                     if (t.Display != DisplayType.Hide) 
@@ -153,6 +160,7 @@ namespace Fungus.EditorUtils
                         EditorGUILayout.PropertyField(shiftIntoPlaceProp);
                     }
                 }
+
                 if (t.Move)
                 {
                     if (t.Display != DisplayType.Hide) 
@@ -183,6 +191,8 @@ namespace Fungus.EditorUtils
                     t.FromPosition = null;
                     toPositionPrefix = "At ";
                 }
+
+                // 指定目标点
                 if (t.Display == DisplayType.Show || (t.Display == DisplayType.Hide && t.Move) )
                 {
                     // TO POSITION
@@ -195,11 +205,14 @@ namespace Fungus.EditorUtils
                 {
                     t.ToPosition = null;
                 }
+
                 if (!t.Move && t.Display != DisplayType.MoveToFront)
                 {
                     // MOVE
                     EditorGUILayout.PropertyField(moveProp);
                 }
+
+                // 是Show, Hode, 或 Replace
                 if (t.Display != DisplayType.MoveToFront)
                 {
                 
@@ -224,6 +237,7 @@ namespace Fungus.EditorUtils
                 }
                 else
                 {
+                    // 是MoveToFront
                     t.Move = false;
                     t.UseDefaultSettings = true;
                     EditorGUILayout.Separator();

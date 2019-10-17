@@ -20,6 +20,7 @@ namespace Fungus
 
         #region Public members
 
+        // 在Button上添加点击监听
         public virtual void Start()
         {
             if (targetButton != null)

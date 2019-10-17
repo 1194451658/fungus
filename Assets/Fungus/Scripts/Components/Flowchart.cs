@@ -579,6 +579,8 @@ namespace Fungus
                 return false;
             }
 
+            // 必须是
+            // 本Flowchart下的Block
             if (((Block)block).gameObject != gameObject)
             {
                 Debug.LogError("Block must belong to the same gameobject as this Flowchart");
@@ -1280,8 +1282,13 @@ namespace Fungus
         /// with public variables in all Flowcharts in the scene (and any component
         /// in the scene that implements StringSubstituter.ISubstitutionHandler).
         /// </summary>
+
+        // 进行变量替换
+        // 先使用本Flowcharts上的私有变量
+        // 然后使用ISubstitutionHandler，可以找到全局的Flowchart
         public virtual string SubstituteVariables(string input)
         {
+            // 创建StringSubstituter实例
             if (stringSubstituer == null)
             {
                 stringSubstituer = new StringSubstituter();
@@ -1292,17 +1299,25 @@ namespace Fungus
             sb.Length = 0;
             sb.Append(input);
 
+            // 变量格式匹配
+            // {$变量名}
             // Instantiate the regular expression object.
             Regex r = new Regex(SubstituteVariableRegexString);
 
             bool changed = false;
 
+            // 匹配到句子中
+            // 所有变量
             // Match the regular expression pattern against a text string.
             var results = r.Matches(input);
             for (int i = 0; i < results.Count; i++)
             {
                 Match match = results[i];
+
+                // 提取到变量名
                 string key = match.Value.Substring(2, match.Value.Length - 3);
+
+                // 匹配私有变量
                 // Look for any matching private variables in this Flowchart first
                 for (int j = 0; j < variables.Count; j++)
                 {
@@ -1317,6 +1332,10 @@ namespace Fungus
                     }
                 }
             }
+
+            // 使用ISubstitutionHandler
+            // 进行变量替换
+            // （这里会调用到，全局的Flowchart）
 
             // Now do all other substitutions in the scene
             changed |= stringSubstituer.SubstituteStrings(sb);
@@ -1357,6 +1376,9 @@ namespace Fungus
         /// To perform full variable substitution with all substitution handlers in the scene, you should
         /// use the SubstituteVariables() method instead.
         /// </summary>
+
+        // SubstituteVariables()会调用到这里
+        // 进行全局Flowchart的变量替换
         [MoonSharp.Interpreter.MoonSharpHidden]
         public virtual bool SubstituteStrings(StringBuilder input)
         {

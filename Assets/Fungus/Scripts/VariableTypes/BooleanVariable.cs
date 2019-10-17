@@ -16,6 +16,7 @@ namespace Fungus
         public static readonly CompareOperator[] compareOperators = { CompareOperator.Equals, CompareOperator.NotEquals };
         public static readonly SetOperator[] setOperators = { SetOperator.Assign, SetOperator.Negate };
 
+        // 支持的比较操作
         public virtual bool Evaluate(CompareOperator compareOperator, bool booleanValue)
         {
             bool condition = false;
@@ -25,9 +26,11 @@ namespace Fungus
             
             switch (compareOperator)
             {
+                // 相等
                 case CompareOperator.Equals:
                     condition = lhs == rhs;
                     break;
+                // 不相等
                 case CompareOperator.NotEquals:
                     condition = lhs != rhs;
                     break;
@@ -39,13 +42,17 @@ namespace Fungus
             return condition;
         }
 
+        // 支持的操作
         public override void Apply(SetOperator setOperator, bool value)
         {
             switch (setOperator)
             {
+                // 赋值
                 case SetOperator.Assign:
                     Value = value;
                     break;
+
+                // 赋值，取反
                 case SetOperator.Negate:
                     Value = !value;
                     break;
@@ -60,6 +67,10 @@ namespace Fungus
     /// Container for a Boolean variable reference or constant value.
     /// </summary>
     [System.Serializable]
+
+    //  * bool变量和常量的封装
+    //      * 封装BooleanVariable
+    //      * 封装bool值
     public struct BooleanData
     {
         [SerializeField]
@@ -75,6 +86,7 @@ namespace Fungus
             booleanRef = null;
         }
         
+        // 转换成bool类型
         public static implicit operator bool(BooleanData booleanData)
         {
             return booleanData.Value;

@@ -240,6 +240,8 @@ namespace Fungus
             int i = 0;
             while (true)
             {
+                // 从jumpToCommandIndex获取
+                // 下一个要执行的命令
                 // Executing commands specify the next command to skip to by setting jumpToCommandIndex using Command.Continue()
                 if (jumpToCommandIndex > -1)
                 {
@@ -247,6 +249,8 @@ namespace Fungus
                     jumpToCommandIndex = -1;
                 }
 
+                // 跳过, 
+                // 注释命令，Label命令
                 // Skip disabled commands, comments and labels
                 while (i < commandList.Count &&
                       (!commandList[i].enabled || 
@@ -256,11 +260,14 @@ namespace Fungus
                     i = commandList[i].CommandIndex + 1;
                 }
 
+                // 到达命令队列末尾
                 if (i >= commandList.Count)
                 {
                     break;
                 }
 
+                // 记录，
+                // 前一个命令的index
                 // The previous active command is needed for if / else / else if commands
                 if (activeCommand == null)
                 {
@@ -271,11 +278,14 @@ namespace Fungus
                     previousActiveCommandIndex = activeCommand.CommandIndex;
                 }
 
+                // 获取到，
+                // 要执行的命令
                 var command = commandList[i];
                 activeCommand = command;
 
                 if (flowchart.IsActive())
                 {
+                    // Q: SelectedCommands是？
                     // Auto select a command in some situations
                     if ((flowchart.SelectedCommands.Count == 0 && i == 0) ||
                         (flowchart.SelectedCommands.Count == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
@@ -285,13 +295,19 @@ namespace Fungus
                     }
                 }
 
+                // 标记命令执行
                 command.IsExecuting = true;
                 // This icon timer is managed by the FlowchartWindow class, but we also need to
                 // set it here in case a command starts and finishes execution before the next window update.
                 command.ExecutingIconTimer = Time.realtimeSinceStartup + FungusConstants.ExecutingIconFadeTime;
+
+                // 发送消息
                 BlockSignals.DoCommandExecute(this, command, i, commandList.Count);
+
+                // 执行命令
                 command.Execute();
 
+                // 等待Continue()被调用
                 // Wait until the executing command sets another command to jump to via Command.Continue()
                 while (jumpToCommandIndex == -1)
                 {

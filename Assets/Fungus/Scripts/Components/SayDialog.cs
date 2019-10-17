@@ -14,6 +14,7 @@ namespace Fungus
     /// </summary>
     public class SayDialog : MonoBehaviour
     {
+        // 隐藏消失时间
         [Tooltip("Duration to fade dialogue in/out")]
         [SerializeField] protected float fadeDuration = 0.25f;
 
@@ -167,8 +168,7 @@ namespace Fungus
             return canvasGroup;
         }
 
-        // 获取、添加
-        // WriterAudio控件
+        // 确保有WriterAudio控件
         protected virtual WriterAudio GetWriterAudio()
         {
             if (writerAudio != null)
@@ -224,29 +224,39 @@ namespace Fungus
 
         protected virtual void UpdateAlpha()
         {
+            // 还在书写
             if (GetWriter().IsWriting)
             {
+                // 设置显示
                 targetAlpha = 1f;
                 fadeCoolDownTimer = 0.1f;
             }
             else if (fadeWhenDone && Mathf.Approximately(fadeCoolDownTimer, 0f))
             {
+                // 没有在书写
+                // 设置隐藏
                 targetAlpha = 0f;
             }
             else
             {
+                // 书写结束后的，
+                // 隐藏延迟
                 // Add a short delay before we start fading in case there's another Say command in the next frame or two.
                 // This avoids a noticeable flicker between consecutive Say commands.
                 fadeCoolDownTimer = Mathf.Max(0f, fadeCoolDownTimer - Time.deltaTime);
             }
 
             CanvasGroup canvasGroup = GetCanvasGroup();
+
+            // 隐藏动效结束
             if (fadeDuration <= 0f)
             {
+                // 设置成完全隐藏
                 canvasGroup.alpha = targetAlpha;
             }
             else
             {
+                // 缓动alpha
                 float delta = (1f / fadeDuration) * Time.deltaTime;
                 float alpha = Mathf.MoveTowards(canvasGroup.alpha, targetAlpha, delta);
                 canvasGroup.alpha = alpha;
@@ -557,6 +567,8 @@ namespace Fungus
             // 获取Writer控件
             var writer = GetWriter();
 
+            // 结束Writer，上一次的书写
+            // 并等待，Writer的结束
             if (writer.IsWriting || writer.IsWaitingForInput)
             {
                 writer.Stop();
@@ -583,6 +595,7 @@ namespace Fungus
             // 开启自己
             gameObject.SetActive(true);
 
+            // 设置，之后是否隐藏选项
             this.fadeWhenDone = fadeWhenDone;
 
             // Voice over clip takes precedence over a character sound effect if provided
@@ -592,6 +605,8 @@ namespace Fungus
             AudioClip soundEffectClip = null;
             if (voiceOverClip != null)
             {
+                // WriterAudio类
+                // 播放声音
                 WriterAudio writerAudio = GetWriterAudio();
                 writerAudio.OnVoiceover(voiceOverClip);
             }
@@ -602,6 +617,8 @@ namespace Fungus
 
             writer.AttachedWriterAudio = writerAudio;
 
+            // 调用Coroutine
+            // Writer进行书写
             yield return StartCoroutine(writer.Write(text, clearPrevious, waitForInput, stopVoiceover, waitForVO, soundEffectClip, onComplete));
         }
 

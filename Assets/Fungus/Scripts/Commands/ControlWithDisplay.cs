@@ -6,6 +6,16 @@ using UnityEngine;
 
 namespace Fungus
 {
+    // TDisplayEnum: 显示操作枚举
+    // 例如：
+    // public enum DisplayType
+    // {
+    //     None,
+    //     Show,
+    //     Hide,
+    //     Replace,
+    //     MoveToFront
+    // }
     public class ControlWithDisplay<TDisplayEnum> : Command
     {
         // 显示操作枚举

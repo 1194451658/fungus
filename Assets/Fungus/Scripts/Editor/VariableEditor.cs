@@ -178,10 +178,12 @@ namespace Fungus.EditorUtils
 
         public override void OnGUI (Rect position, SerializedProperty property, GUIContent label) 
         {
+            // Q: EditorGUI.BeginProperty ??
             EditorGUI.BeginProperty(position, label, property);
 
             // The variable reference and data properties must follow the naming convention 'typeRef', 'typeVal'
 
+            // 获得上面的VariableInfoAttribute标签
             VariableInfoAttribute typeInfo = VariableEditor.GetVariableInfo(typeof(T));
             if (typeInfo == null)
             {
@@ -191,7 +193,10 @@ namespace Fungus.EditorUtils
             string propNameBase = typeInfo.VariableType;
             propNameBase = Char.ToLowerInvariant(propNameBase[0]) + propNameBase.Substring(1);
 
+            // 例如：获取
+            // BooleanVariable booleanRef;
             SerializedProperty referenceProp = property.FindPropertyRelative(propNameBase + "Ref");
+            // bool booleanVal;
             SerializedProperty valueProp = property.FindPropertyRelative(propNameBase + "Val");
 
             if (referenceProp == null || valueProp == null)

@@ -12,13 +12,19 @@ namespace Fungus.EditorUtils
     public class CommandEditor : Editor 
     {
         #region statics
+        // 要显示的
+        // Command
         public static Command selectedCommand;
         public static bool SelectedCommandDataStale { get; set; }
 
+        // 获取Command类型，
+        // 上的CommandInfoAttribute标签
         public static CommandInfoAttribute GetCommandInfo(System.Type commandType)
         {
             CommandInfoAttribute retval = null;
 
+            // 得到上面的
+            // CommandInfoAttribute标签
             object[] attributes = commandType.GetCustomAttributes(typeof(CommandInfoAttribute), false);
             foreach (object obj in attributes)
             {
@@ -37,6 +43,7 @@ namespace Fungus.EditorUtils
 
         #endregion statics
 
+        // ReorderableList: 在UnityEditorInternal中
         private Dictionary<string, ReorderableList> reorderableLists;
 
         public virtual void OnEnable()
@@ -147,6 +154,10 @@ namespace Fungus.EditorUtils
             // Doing so could cause block.commandList to contain null entries.
             // To avoid this we manually display all properties, except for m_Script.
             serializedObject.Update();
+
+            // 获得第一个SerializedProperty
+            // Get the first serialized property.
+            // You can use this to go over all properties of the target object.
             SerializedProperty iterator = serializedObject.GetIterator();
             bool enterChildren = true;
             while (iterator.NextVisible(enterChildren))

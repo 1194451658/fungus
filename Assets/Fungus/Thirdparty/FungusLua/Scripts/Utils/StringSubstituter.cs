@@ -16,7 +16,12 @@ namespace Fungus
     /// </summary>
     public class StringSubstituter : IStringSubstituter
     {
-        // 全局列表
+        // * 全局文本替换列表
+        //  * Flowchart: 
+	    //      * 有实现IStringSubstituter, 
+        //      * 并且在OnEnable()的时候，注册自己
+        //  * Localization
+        //      * 同Flowchart
         protected static List<ISubstitutionHandler> substitutionHandlers = new List<ISubstitutionHandler>();
 
         /// <summary>
@@ -49,6 +54,8 @@ namespace Fungus
         /// Constructor which caches all components in the scene that implement ISubstitutionHandler.
         /// <param name="recursionDepth">Number of levels of recursively embedded keys to resolve.</param>
         /// </summary>
+
+        // recursionDepth: 递归处理几次变量替换
         public StringSubstituter(int recursionDepth = 5)
         {
             stringBuilder = new StringBuilder(1024);
@@ -63,6 +70,7 @@ namespace Fungus
 
         public virtual string SubstituteStrings(string input)
         {
+            // 使用StringBuilder封装下
             stringBuilder.Length = 0;
             stringBuilder.Append(input);
 
@@ -94,6 +102,8 @@ namespace Fungus
                     }
                 }
 
+                // 变量没有被替换
+                // 返回
                 if (!modified)
                 {
                     break;

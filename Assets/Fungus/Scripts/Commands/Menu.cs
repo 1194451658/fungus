@@ -18,11 +18,16 @@ namespace Fungus
     {
         [Tooltip("Text to display on the menu button")]
         [TextArea()]
+
+        // 菜单文本
         [SerializeField] protected string text = "Option Text";
 
+        // 注释描述
         [Tooltip("Notes about the option text for other authors, localization, etc.")]
         [SerializeField] protected string description = "";
 
+        // 菜单的
+        // 下一个目标Block
         [FormerlySerializedAs("targetSequence")]
         [Tooltip("Block to execute when this option is selected")]
         [SerializeField] protected Block targetBlock;
@@ -33,6 +38,8 @@ namespace Fungus
         [Tooltip("If false, the menu option will be displayed but will not be selectable")]
         [SerializeField] protected BooleanData interactable = new BooleanData(true);
 
+        // 自定义的
+        // 菜单界面
         [Tooltip("A custom Menu Dialog to use to display this menu. All subsequent Menu commands will use this dialog.")]
         [SerializeField] protected MenuDialog setMenuDialog;
 
@@ -45,28 +52,37 @@ namespace Fungus
 
         public override void OnEnter()
         {
+            // 使用自定义的
+            // 菜单界面
             if (setMenuDialog != null)
             {
                 // Override the active menu dialog
                 MenuDialog.ActiveMenuDialog = setMenuDialog;
             }
 
-            bool hideOption = (hideIfVisited && targetBlock != null && targetBlock.GetExecutionCount() > 0) || hideThisOption.Value;
+            bool hideOption = (hideIfVisited && targetBlock != null && targetBlock.GetExecutionCount() > 0) ||
+                hideThisOption.Value;
 
+            // 获取菜单窗口
             var menuDialog = MenuDialog.GetMenuDialog();
-                if (menuDialog != null)
-                {
-                    menuDialog.SetActive(true);
+            if (menuDialog != null)
+            {
+                menuDialog.SetActive(true);
 
-                    var flowchart = GetFlowchart();
-                    string displayText = flowchart.SubstituteVariables(text);
+                var flowchart = GetFlowchart();
 
-                    menuDialog.AddOption(displayText, interactable, hideOption, targetBlock);
-                }
+                // 替换显示文本中的变量
+                string displayText = flowchart.SubstituteVariables(text);
+
+                // 添加菜单
+                // 传入菜单参数
+                menuDialog.AddOption(displayText, interactable, hideOption, targetBlock);
+            }
             
             Continue();
         }
 
+        // 获取连接的Block
         public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
         {
             if (targetBlock != null)
@@ -90,6 +106,7 @@ namespace Fungus
             return text + " : " + targetBlock.BlockName;
         }
 
+        // 命令颜色
         public override Color GetButtonColor()
         {
             return new Color32(184, 210, 235, 255);
@@ -97,13 +114,15 @@ namespace Fungus
 
         public override bool HasReference(Variable variable)
         {
-            return interactable.booleanRef == variable || hideThisOption.booleanRef == variable ||
+            return interactable.booleanRef == variable ||
+                hideThisOption.booleanRef == variable ||
                 base.HasReference(variable);
         }
 
         #endregion
 
         #region ILocalizable implementation
+        // 多语言相关
 
         public virtual string GetStandardText()
         {
@@ -130,12 +149,16 @@ namespace Fungus
 
         #region Editor caches
 #if UNITY_EDITOR
+
+        // Q: ???
+        // 这是要做什么？
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
 
+            // Q: ???
             f.DetermineSubstituteVariables(text, referencedVariables);
         }
 #endif

@@ -13,6 +13,8 @@ namespace Fungus
     /// <summary>
     /// Presents multiple choice buttons to the players.
     /// </summary>
+
+    // 菜单界面
     public class MenuDialog : MonoBehaviour
     {
         [Tooltip("Automatically select the first interactable button when the menu is shown.")]
@@ -28,6 +30,9 @@ namespace Fungus
         /// <summary>
         /// Currently active Menu Dialog used to display Menu options
         /// </summary>
+
+        // 当前激活的
+        // 菜单窗口
         public static MenuDialog ActiveMenuDialog { get; set; }
 
         /// <summary>
@@ -45,16 +50,18 @@ namespace Fungus
         /// <summary>
         /// Sets the active state of the Menu Dialog gameobject.
         /// </summary>
+
+        // 开启
         public virtual void SetActive(bool state)
         {
             gameObject.SetActive(state);
         }
 
-
-
         /// <summary>
         /// Returns a menu dialog by searching for one in the scene or creating one if none exists.
         /// </summary>
+
+        // 获取对话菜单
         public static MenuDialog GetMenuDialog()
         {
             if (ActiveMenuDialog == null)
@@ -66,8 +73,10 @@ namespace Fungus
                     ActiveMenuDialog = md;
                 }
 
+                // 没有找到开启的菜单窗口
                 if (ActiveMenuDialog == null)
                 {
+                    // 从Prefabs中，创建新的
                     // Auto spawn a menu dialog object from the prefab
                     GameObject prefab = Resources.Load<GameObject>("Prefabs/MenuDialog");
                     if (prefab != null)
@@ -85,15 +94,22 @@ namespace Fungus
 
         protected virtual void Awake()
         {
+            // 获取面板下方
+            // 所有的按钮
             Button[] optionButtons = GetComponentsInChildren<Button>();
             cachedButtons = optionButtons;
 
+            // 获取面板下
+            // 时间滑动条
             Slider timeoutSlider = GetComponentInChildren<Slider>();
             cachedSlider = timeoutSlider;
 
             if (Application.isPlaying)
             {
                 // Don't auto disable buttons in the editor
+                // 重置nextOptionIndex
+                // 重置按钮位置，点击监听
+                // 重置，时间滑条
                 Clear();
             }
 
@@ -102,6 +118,8 @@ namespace Fungus
 
         // There must be an Event System in the scene for Say and Menu input to work.
         // This method will automatically instantiate one if none exists.
+
+        // 检查是否有EventSystem
         protected virtual void CheckEventSystem()
         {
             EventSystem eventSystem = GameObject.FindObjectOfType<EventSystem>();
@@ -172,16 +190,26 @@ namespace Fungus
         /// <summary>
         /// Clear all displayed options in the Menu Dialog.
         /// </summary>
+
+        // 重置nextOptionIndex
+        // 重置按钮位置，点击监听
+        // 重置，时间滑条
         public virtual void Clear()
         {
+            // MonoBehaviour中的函数
             StopAllCoroutines();
+
+            // 如果有显示什么菜单
+            // 通知菜单显示结束
 
             //if something was shown notify that we are ending
             if(nextOptionIndex != 0)
                 MenuSignals.DoMenuEnd(this);
 
+            // 重置nextOptionIndex
             nextOptionIndex = 0;
 
+            // 移除按钮上的监听
             var optionButtons = CachedButtons;
             for (int i = 0; i < optionButtons.Length; i++)
             {
@@ -189,6 +217,8 @@ namespace Fungus
                 button.onClick.RemoveAllListeners();
             }
 
+            // 重新排序按钮
+            // 隐藏按钮
             for (int i = 0; i < optionButtons.Length; i++)
             {
                 var button = optionButtons[i];
@@ -199,6 +229,7 @@ namespace Fungus
                 }
             }
 
+            // 隐藏时间滑条
             Slider timeoutSlider = CachedSlider;
             if (timeoutSlider != null)
             {
@@ -209,6 +240,8 @@ namespace Fungus
         /// <summary>
         /// Hides any currently displayed Say Dialog.
         /// </summary>
+        
+        // 设置FadeWhenDone
         public virtual void HideSayDialog()
         {
             var sayDialog = SayDialog.GetSayDialog();
@@ -229,24 +262,39 @@ namespace Fungus
         /// <param name="targetBlock">Block to execute when the option is selected.</param>
         public virtual bool AddOption(string text, bool interactable, bool hideOption, Block targetBlock)
         {
+            // 定义了action
             var block = targetBlock;
             UnityEngine.Events.UnityAction action = delegate
             {
                 EventSystem.current.SetSelectedGameObject(null);
                 StopAllCoroutines();
                 // Stop timeout
+
+                // 重置nextOptionIndex
+                // 重置按钮位置，点击监听
+                // 重置，时间滑条
                 Clear();
+
+                // 设置FadeWhenDone
                 HideSayDialog();
+
                 if (block != null)
                 {
                     var flowchart = block.GetFlowchart();
 #if UNITY_EDITOR
                     // Select the new target block in the Flowchart window
+
+                    // Editor中
+                    // 设置高亮执行的Block
                     flowchart.SelectedBlock = block;
 #endif
+                    // 隐藏菜单
                     gameObject.SetActive(false);
+
                     // Use a coroutine to call the block on the next frame
                     // Have to use the Flowchart gameobject as the MenuDialog is now inactive
+
+                    // 调用目标Block
                     flowchart.StartCoroutine(CallBlock(block));
                 }
             };
@@ -259,6 +307,8 @@ namespace Fungus
         /// Will cause the Menu dialog to become visible if it is not already visible.
         /// </summary>
         /// <returns><c>true</c>, if the option was added successfully.</returns>
+        
+        // 和Lua相关的函数
         public virtual bool AddOption(string text, bool interactable, LuaEnvironment luaEnv, Closure callBack)
         {
             if (!gameObject.activeSelf)
@@ -293,38 +343,54 @@ namespace Fungus
         /// <param name="action">Action attached to the button on the menu item</param>
         private bool AddOption(string text, bool interactable, bool hideOption, UnityEngine.Events.UnityAction action)
         {
+            // 超出了
+            // 搜索到的按钮的个数
             if (nextOptionIndex >= CachedButtons.Length)
                 return false;
 
+            // 通知
+            // 菜单开始显示了
             //if first option notify that a menu has started
             if(nextOptionIndex == 0)
                 MenuSignals.DoMenuStart(this);
 
+            // nextOptionIndex: 下一个将要使用的Button
             var button = cachedButtons[nextOptionIndex];
             
             //move forward for next call
             nextOptionIndex++;
 
+            // 此菜单，
+            // 是否是隐藏
             //don't need to set anything on it
             if (hideOption)
                 return true;
 
+            // 显示菜单
             button.gameObject.SetActive(true);
             button.interactable = interactable;
-            if (interactable && autoSelectFirstButton && !cachedButtons.Select(x => x.gameObject).Contains(EventSystem.current.currentSelectedGameObject))
+
+            // Q: ???
+            if (interactable &&
+                autoSelectFirstButton &&
+                !cachedButtons.Select(x => x.gameObject).Contains(EventSystem.current.currentSelectedGameObject))
             {
                 EventSystem.current.SetSelectedGameObject(button.gameObject);
             }
 
+            // 使用TextAdapter
+            // 设置按钮上的文本
             TextAdapter textAdapter = new TextAdapter();
             textAdapter.InitFromGameObject(button.gameObject, true);
             if (textAdapter.HasTextObject())
             {
+                // 考虑文本变化
                 text = TextVariationHandler.SelectVariations(text);
 
                 textAdapter.Text = text;
             }
 
+            // 监听按钮点击
             button.onClick.AddListener(action);
             
             return true;
@@ -335,11 +401,15 @@ namespace Fungus
         /// </summary>
         /// <param name="duration">The duration during which the player can select an option.</param>
         /// <param name="targetBlock">Block to execute if the player does not select an option in time.</param>
+
+        // 显示，倒计时时间条
         public virtual void ShowTimer(float duration, Block targetBlock)
         {
             if (cachedSlider != null)
             {
+                // 显示
                 cachedSlider.gameObject.SetActive(true);
+                // Q: 隐藏了窗口？
                 gameObject.SetActive(true);
                 StopAllCoroutines();
                 StartCoroutine(WaitForTimeout(duration, targetBlock));
@@ -357,6 +427,7 @@ namespace Fungus
                 yield break;
             }
 
+            // 显示，时间条
             CachedSlider.gameObject.SetActive(true);
             StopAllCoroutines();
 
@@ -365,21 +436,28 @@ namespace Fungus
 
             while (elapsedTime < duration)
             {
+                // 更新进度
                 if (timeoutSlider != null)
                 {
                     float t = 1f - elapsedTime / duration;
                     timeoutSlider.value = t;
                 }
 
+                // 更新流逝时间
                 elapsedTime += Time.deltaTime;
 
                 yield return null;
             }
 
             Clear();
+
+            // 隐藏菜单界面
             gameObject.SetActive(false);
+
+            // 隐藏对话界面？！
             HideSayDialog();
 
+            // 回调Lua函数
             if (callBack != null)
             {
                 luaEnv.RunLuaFunction(callBack, true);
@@ -397,6 +475,8 @@ namespace Fungus
         /// <summary>
         /// Returns the number of currently displayed options.
         /// </summary>
+
+        // 显示的菜单的个数
         public virtual int DisplayedOptionsCount
         {
             get {
@@ -416,6 +496,8 @@ namespace Fungus
 		/// <summary>
 		/// Shuffle the parent order of the cached buttons, allows for randomising button order, buttons are auto reordered when cleared
 		/// </summary>
+
+        // 洗牌
 		public void Shuffle(System.Random r)
 		{
 			for (int i = 0; i < CachedButtons.Length; i++)

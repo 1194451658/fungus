@@ -18,10 +18,13 @@ namespace Fungus
 
         void Awake()
         {
+            // 创建一个叫GlobalVariables的go
+            // 上面还挂着Flowchart
             holder = new GameObject("GlobalVariables").AddComponent<Flowchart>();
             holder.transform.parent = transform;
         }
 
+        // 获取变量
 		public Variable GetVariable(string variableKey)
 		{
 			Variable v = null;
@@ -29,12 +32,14 @@ namespace Fungus
 			return v;
 		}
 
+        // 获取，或添加变量
         public VariableBase<T> GetOrAddVariable<T>(string variableKey, T defaultvalue, Type type)
         {
             Variable v = null;
             VariableBase<T> vAsT = null;
             var res = variables.TryGetValue(variableKey, out v);
 
+            // 有找到变量
             if(res && v != null)
             {
                 vAsT = v as VariableBase<T>;
@@ -50,6 +55,9 @@ namespace Fungus
             }
             else
             {
+                // 没有找到变量
+                // 创建变量
+                // 添加到GlobalVariables的Flowchart中
                 //create the variable
                 vAsT = holder.gameObject.AddComponent(type) as VariableBase<T>;
                 vAsT.Value = defaultvalue;

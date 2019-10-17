@@ -27,6 +27,7 @@ namespace Fungus
         [Tooltip("Portrait that represents speaking character")]
         [SerializeField] protected Sprite portrait;
 
+        // 要播放的语音
         [Tooltip("Voiceover audio to play when writing the text")]
         [SerializeField] protected AudioClip voiceOverClip;
 
@@ -45,6 +46,8 @@ namespace Fungus
         [Tooltip("Wait for player to click before continuing.")]
         [SerializeField] protected bool waitForClick = true;
 
+        // 文本结束的时候
+        // 停止播放语音
         [Tooltip("Stop playing voiceover when text finishes writing.")]
         [SerializeField] protected bool stopVoiceover = true;
 
@@ -53,6 +56,7 @@ namespace Fungus
 
         //add wait for vo that overrides stopvo
 
+        // 对话专属的对话框
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. All story text will now display using this Say Dialog.")]
         [SerializeField] protected SayDialog setSayDialog;
 
@@ -92,6 +96,7 @@ namespace Fungus
             // Override the active say dialog if needed
             if (character != null && character.SetSayDialog != null)
             {
+                // 使用设置的对话框
                 SayDialog.ActiveSayDialog = character.SetSayDialog;
             }
 
@@ -99,6 +104,7 @@ namespace Fungus
             // 是否有设置，对话面板
             if (setSayDialog != null)
             {
+                // 使用设置的对话框
                 SayDialog.ActiveSayDialog = setSayDialog;
             }
 
@@ -147,12 +153,21 @@ namespace Fungus
             // 替换变量{$VarName}内容
             string subbedText = flowchart.SubstituteVariables(displayText);
 
+            // Say有持续时间
+            //  * 中间文本一点点出来
+            //  * 文本中间有延迟
+            //  * 文本最后，可能等待输入
+            // 所以这里是，有完成回调！
+            // 完成后，才执行下一个命令
             sayDialog.Say(
                 subbedText,
                 !extendPrevious,
                 waitForClick,
                 fadeWhenDone,
-                stopVoiceover,
+
+                // 和语音相关的
+                // 3个选项
+                stopVoiceover,      // 文本结束时候，是否结束语音
                 waitForVO,
                 voiceOverClip,
                 delegate {

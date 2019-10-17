@@ -38,6 +38,8 @@ namespace Fungus
         public override string GetSummary()
         {
             string summary = "";
+
+            // images中的go的名称列表
             for (int i = 0; i < images.Count; i++)
             {
                 var targetImage = images[i];

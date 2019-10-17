@@ -13,6 +13,7 @@ namespace Fungus.EditorUtils
 {
     public class FlowchartWindow : EventWindow
     {
+        // 剪切板？
         protected class ClipboardObject
         {
             internal SerializedObject serializedObject;
@@ -1616,6 +1617,7 @@ namespace Fungus.EditorUtils
                 var commandList = deleteBlock.CommandList;
                 for (int j = 0; j < commandList.Count; ++j)
                 {
+                    // Destroys the object and records an undo operation so that it can be recreated.
                     Undo.DestroyObjectImmediate(commandList[j]);
                 }
 

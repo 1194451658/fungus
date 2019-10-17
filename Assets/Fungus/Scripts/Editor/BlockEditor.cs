@@ -122,6 +122,7 @@ namespace Fungus.EditorUtils
 
                 EditorGUILayout.BeginHorizontal();
 
+                // 显示Tint Toggle
                 useCustomTintProp.boolValue = GUILayout.Toggle(useCustomTintProp.boolValue, " Custom Tint");
                 if (useCustomTintProp.boolValue)
                 {
@@ -130,10 +131,13 @@ namespace Fungus.EditorUtils
 
                 EditorGUILayout.EndHorizontal();
 
+                // 显示描述
                 SerializedProperty descriptionProp = serializedObject.FindProperty("description");
                 EditorGUILayout.PropertyField(descriptionProp);
                 EditorGUILayout.Space();
                 
+                // 显示
+                // 触发事件
                 DrawEventHandlerGUI(flowchart);
 
                 block.UpdateIndentLevels();
@@ -148,6 +152,7 @@ namespace Fungus.EditorUtils
                     command.ParentBlock = block;
                 }
 
+                // 显示命令列表
                 commandListAdaptor.DrawCommandList();
 
                 // EventType.contextClick doesn't register since we moved the Block Editor to be inside
@@ -294,12 +299,14 @@ namespace Fungus.EditorUtils
                 Event.current.Use();
             }
 
+            // 想上箭头按钮
             if (GUILayout.Button(upIcon))
             {
                 SelectPrevious();
             }
 
             // Down Button
+            // 向下箭头按钮
             if (GUILayout.Button(downIcon))
             {
                 SelectNext();
@@ -330,6 +337,7 @@ namespace Fungus.EditorUtils
                 );
             }
 
+            // 复制按钮
             // Duplicate Button
             if (GUILayout.Button(duplicateIcon))
             {
@@ -337,6 +345,7 @@ namespace Fungus.EditorUtils
                 Paste();
             }
 
+            // 删除按钮
             // Delete Button
             if (GUILayout.Button(deleteIcon))
             {

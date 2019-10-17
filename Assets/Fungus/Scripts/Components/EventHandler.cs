@@ -10,6 +10,8 @@ namespace Fungus
     /// <summary>
     /// Attribute class for Fungus event handlers.
     /// </summary>
+
+    // [EventHandlerInfo]标签
     public class EventHandlerInfoAttribute : Attribute
     {
         public EventHandlerInfoAttribute(string category, string eventHandlerName, string helpText)
@@ -61,13 +63,17 @@ namespace Fungus
                 return false;
             }
 
+            // 检查，是否匹配，
+            // Block的EventHandler，
             if (ParentBlock._EventHandler != this)
             {
                 return false;
             }
 
+            // 得到Block的ParentBlock
             var flowchart = ParentBlock.GetFlowchart();
 
+            // 检查Flowchart
             //if somehow the flowchart is invalid or has been disabled we don't want to continue
             if(flowchart == null || !flowchart.isActiveAndEnabled)
             {
@@ -80,6 +86,7 @@ namespace Fungus
                 flowchart.SelectedBlock = ParentBlock;
             }
 
+            // 调用Flowchart执行Block
             return flowchart.ExecuteBlock(ParentBlock);
         }
 

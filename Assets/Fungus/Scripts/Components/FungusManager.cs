@@ -86,6 +86,10 @@ namespace Fungus
         /// <summary>
         /// Gets the FungusManager singleton instance.
         /// </summary>
+
+        // 没有实例的时候
+        // 自动创建
+        // Q: 不能手动创建？！
         public static FungusManager Instance
         {
             get
