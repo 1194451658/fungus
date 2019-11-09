@@ -36,24 +36,30 @@ namespace Fungus
     /// Mathematical operations that can be performed on variables.
     /// </summary>
 
-    // 复制运算
+    // 运算符号
     public enum SetOperator
     {
+        // = 赋值运算
         /// <summary> = operator. </summary>
         Assign,
 
+        //  ! 取反运算
         /// <summary> =! operator. </summary>
         Negate,
 
+        // + 加运算
         /// <summary> += operator. </summary>
         Add,
 
+        // - 减运算
         /// <summary> -= operator. </summary>
         Subtract,
 
+        // * 乘运算
         /// <summary> *= operator. </summary>
         Multiply,
 
+        // / 除运算
         /// <summary> /= operator. </summary>
         Divide
     }
@@ -62,7 +68,7 @@ namespace Fungus
     /// Scope types for Variables.
     /// </summary>
 
-    // 变量
+    // 变量作用域
     public enum VariableScope
     {
         /// <summary> Can only be accessed by commands in the same Flowchart. </summary>
@@ -77,7 +83,10 @@ namespace Fungus
     /// Attribute class for variables.
     /// </summary>
 
-    // [VariableInfo]标签
+    // [VariableInfo] 标签
+    // category: ??
+    // variableType: ??
+    // order: ??
     public class VariableInfoAttribute : Attribute
     {
         public VariableInfoAttribute(string category, string variableType, int order = 0)
@@ -96,11 +105,13 @@ namespace Fungus
     /// Attribute class for variable properties.
     /// </summary>
 
+    // [VariableProperty]标签
+    //  * defaultText: ???
+    //  * variableTypes: ???
     // PropertyAttribute
     //  * 是Unity类
     //  * 可以和PropertyDrawer配合使用，自定义类中变量的，inspector显示
     // 
-    // [VariableProperty]标签
     public class VariablePropertyAttribute : PropertyAttribute 
     {
         // 构造函数1
@@ -125,27 +136,48 @@ namespace Fungus
     /// Abstract base class for variables.
     /// </summary>
 
-    // 定义变量？！
-    // 是挂载在Flowchart上的!
+    // 变量基类
+    // Q: 是挂载在Flowchart上的!
     [RequireComponent(typeof(Flowchart))]
     public abstract class Variable : MonoBehaviour
     {
-        [SerializeField] protected VariableScope scope;
+        // 变量作用域
+        [SerializeField] 
+        protected VariableScope scope;
 
         // 变量名称
-        [SerializeField] protected string key = "";
+        [SerializeField] 
+        protected string key = "";
 
         #region Public members
 
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
-        public virtual VariableScope Scope { get { return scope; } set { scope = value; } }
+
+        // 变量作用域
+        public virtual VariableScope Scope {
+            get {
+                return scope; 
+            } 
+            set {
+                scope = value; 
+            } 
+        }
 
         /// <summary>
         /// String identifier for the variable.
         /// </summary>
-        public virtual string Key { get { return key; } set { key = value; } }
+
+        // 变量名称
+        public virtual string Key {
+            get {
+                return key; 
+            } 
+            set {
+                key = value; 
+            } 
+        }
 
         /// <summary>
         /// Callback to reset the variable if the Flowchart is reset.
@@ -158,13 +190,19 @@ namespace Fungus
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
+
+    // 变量基类
+    // VariableTypes/* 目录下有各类型变量具体实现
     public abstract class VariableBase<T> : Variable
     {
-        //
-        // 是全局变量的时候
-        // 会缓存，向GlobalVariables中的访问？！
-        //
         //caching mechanism for global static variables
+
+        //
+        // 是全局变量的时
+        // 访问到这里
+        // 运行的时候才起作用
+        // 通过FungusManager.Instance.GlobalVariables进行操作
+        //
         private VariableBase<T> _globalStaicRef;
         private VariableBase<T> globalStaicRef
         {
@@ -185,40 +223,49 @@ namespace Fungus
             }
         }
 
-        // 变量的值
-        [SerializeField] protected T value;
+        // 变量值
+        [SerializeField] 
+        protected T value;
         public virtual T Value
         {
             get
             {
+                // 不是Global变量
+                // 或者是，没有在运行
+                // 直接返回值
+                // Q: 为什么是Global的时候，需要通过FungusManager来访问？
                 if (scope != VariableScope.Global || !Application.isPlaying)
                 {
-                    // 不是Global变量
-                    // 或者是，没有在运行
                     return this.value;
                 }
                 else
                 { 
-                    // 是Global变量，并且在运行
+                    // 是Global变量，
+                    // 并且在运行
+                    // 通过FungusManager.Instance.GlobalVariables来访问
                     return globalStaicRef.value;
                 }
             }
+
             set
             {
                 if (scope != VariableScope.Global || !Application.isPlaying)
                 {
                     // 不是Global变量
                     // 或者是，没有在运行
+                    // 直接设置值
                     this.value = value;
                 }
                 else
                 {
                     // 是Global变量，并且在运行
+                    // 通过FungusManager.Instance.GlobalVariables来访问
                     globalStaicRef.Value = value;
                 }
             }
         }
 
+        // 默认初始值
         protected T startValue;
 
         public override void OnReset()

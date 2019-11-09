@@ -9,6 +9,8 @@ namespace Fungus
     /// <summary>
     /// Fungus manager singleton. Manages access to all Fungus singletons in a consistent manner.
     /// </summary>
+
+    // 都是Fungus自己的组件
     [RequireComponent(typeof(CameraManager))]
     [RequireComponent(typeof(MusicManager))]
     [RequireComponent(typeof(EventDispatcher))]
@@ -17,6 +19,10 @@ namespace Fungus
     [RequireComponent(typeof(SaveManager))]
     [RequireComponent(typeof(NarrativeLog))]
     #endif
+
+    //  单例
+    //  调用Instance的时候，自动创建GameObject
+    //  并且为DontDestoryOnLoad
     public sealed class FungusManager : MonoBehaviour
     {
         static FungusManager instance;

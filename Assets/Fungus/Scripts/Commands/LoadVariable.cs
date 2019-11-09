@@ -42,6 +42,9 @@ namespace Fungus
 
             System.Type variableType = variable.GetType();
 
+            // 使用PlayerPrefs
+            // 读取SaveVariable保存的变量值
+
             if (variableType == typeof(BooleanVariable))
             {
                 BooleanVariable booleanVariable = variable as BooleanVariable;

@@ -10,10 +10,18 @@ namespace Fungus
     /// <summary>
     /// Storage for a collection of fungus variables that can then be accessed globally.
     /// </summary>
+
+    // FungusManager创建的时候
+    // 会被挂载上
     public class GlobalVariables : MonoBehaviour
     {
+        // Q: 为什么还要将变量，保存到FlowChart里？
         private Flowchart holder;
 
+        // Variable:
+        //  * Components/Variable.cs中定义
+        //  * Variable : MonoBehaviour
+        //  定义和管理的变量
         Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
         void Awake()
@@ -37,6 +45,8 @@ namespace Fungus
         {
             Variable v = null;
             VariableBase<T> vAsT = null;
+
+            // 返回：是否包含此变量
             var res = variables.TryGetValue(variableKey, out v);
 
             // 有找到变量
@@ -64,6 +74,8 @@ namespace Fungus
                 vAsT.Key = variableKey;
                 vAsT.Scope = VariableScope.Public;
                 variables[variableKey] = vAsT;
+
+                // Q: 这里，为什么还要保存到一个FlowChart里？
                 holder.Variables.Add(vAsT);
             }
 

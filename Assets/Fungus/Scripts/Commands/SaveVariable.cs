@@ -16,22 +16,33 @@ namespace Fungus
                  "The value can be loaded again later using the Load Variable command. You can also " +
                  "use the Set Save Profile command to manage separate save profiles for multiple players.")]
     [AddComponentMenu("")]
+
+    // 保存一个变量，到持久化存储
     public class SaveVariable : Command
     {
         [Tooltip("Name of the saved value. Supports variable substition e.g. \"player_{$PlayerNumber}")]
-        [SerializeField] protected string key = "";
+        [SerializeField] 
+
+        // 要保存的key
+        protected string key = "";
         
         [Tooltip("Variable to read the value from. Only Boolean, Integer, Float and String are supported.")]
         [VariableProperty(typeof(BooleanVariable),
                           typeof(IntegerVariable), 
                           typeof(FloatVariable), 
                           typeof(StringVariable))]
-        [SerializeField] protected Variable variable;
+        [SerializeField] 
+
+        // 要保存的变量
+        protected Variable variable;
 
         #region Public members
 
         public override void OnEnter()
         {
+            // 如果没有key
+            // 没有变量
+            // 返回
             if (key == "" ||
                 variable == null)
             {
@@ -42,10 +53,18 @@ namespace Fungus
             var flowchart = GetFlowchart();
             
             // Prepend the current save profile (if any)
+
+            // 从SetSaveProfile命令中，获取设置的前缀
+            // key: 中也支持变量展开
             string prefsKey = SetSaveProfile.SaveProfile + "_" + flowchart.SubstituteVariables(key);
             
             System.Type variableType = variable.GetType();
 
+            //
+            // 使用PlayerPrefs保存变量的值
+            //
+
+            // bool类型
             if (variableType == typeof(BooleanVariable))
             {
                 BooleanVariable booleanVariable = variable as BooleanVariable;
@@ -55,6 +74,8 @@ namespace Fungus
                     PlayerPrefs.SetInt(prefsKey, booleanVariable.Value ? 1 : 0);
                 }
             }
+
+            // int类型
             else if (variableType == typeof(IntegerVariable))
             {
                 IntegerVariable integerVariable = variable as IntegerVariable;
@@ -63,6 +84,8 @@ namespace Fungus
                     PlayerPrefs.SetInt(prefsKey, integerVariable.Value);
                 }
             }
+
+            // float类型
             else if (variableType == typeof(FloatVariable))
             {
                 FloatVariable floatVariable = variable as FloatVariable;
@@ -71,6 +94,7 @@ namespace Fungus
                     PlayerPrefs.SetFloat(prefsKey, floatVariable.Value);
                 }
             }
+            // string类型
             else if (variableType == typeof(StringVariable))
             {
                 StringVariable stringVariable = variable as StringVariable;

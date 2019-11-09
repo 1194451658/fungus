@@ -43,6 +43,8 @@ namespace Fungus
         }
 
         // 支持的操作
+        //  * 赋值
+        //  * 取反
         public override void Apply(SetOperator setOperator, bool value)
         {
             switch (setOperator)

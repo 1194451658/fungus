@@ -17,7 +17,8 @@ namespace Fungus
     public class SetSaveProfile : Command
     {
         [Tooltip("Name of save profile to make active.")]
-        [SerializeField] protected string saveProfileName = "";
+        [SerializeField] 
+        protected string saveProfileName = "";
 
 		/// <summary>
 		/// Shared save profile name used by SaveVariable and LoadVariable.

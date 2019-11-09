@@ -26,6 +26,9 @@ namespace Fungus
             return ColorUtility.ToHtmlStringRGBA(a) == ColorUtility.ToHtmlStringRGBA(b);
         }
 
+        // 比较运算：
+        //  * 相同
+        //  * 不同
         public virtual bool Evaluate(CompareOperator compareOperator, Color value)
         {
             bool condition = false;
@@ -46,6 +49,12 @@ namespace Fungus
             return condition;
         }
 
+
+        // 操作运算：
+        //  * 赋值
+        //  * +
+        //  * -
+        //  * 乘
         public override void Apply(SetOperator setOperator, Color value)
         {
             switch (setOperator)

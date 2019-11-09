@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 namespace Fungus
 {
+    // 设置变量值
+
     /// <summary>
     /// Sets a Boolean, Integer, Float or String variable to a new value using a simple arithmetic operation. The value can be a constant or reference another variable of the same type.
     /// </summary>
@@ -13,6 +15,8 @@ namespace Fungus
                  "Set Variable",
                  "Sets a Boolean, Integer, Float or String variable to a new value using a simple arithmetic operation. The value can be a constant or reference another variable of the same type.")]
     [AddComponentMenu("")]
+
+    // 给变量进行赋值、等操作
     public class SetVariable : Command
     {
         [Tooltip("The variable whos value will be set")]
@@ -35,8 +39,13 @@ namespace Fungus
         [SerializeField] protected Variable variable;
 
         [Tooltip("The type of math operation to be performed")]
-        [SerializeField] protected SetOperator setOperator;
+        [SerializeField] 
 
+        // 执行的操作
+        protected SetOperator setOperator;
+
+        // 不同类型
+        // 变量的值
         [Tooltip("Boolean value to set with")]
         [SerializeField] protected BooleanData booleanData;
 
@@ -85,6 +94,7 @@ namespace Fungus
         [Tooltip("Vector3 value to set with")]
         [SerializeField] protected Vector3Data vector3Data;
 
+        // 执行操作运算
         protected virtual void DoSetOperation()
         {
             if (variable == null)
@@ -92,6 +102,8 @@ namespace Fungus
                 return;
             }
 
+            // 调用各类型的
+            // Apply()函数
 
             var t = variable.GetType();
 
