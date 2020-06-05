@@ -131,6 +131,7 @@ namespace Fungus.EditorUtils
         }
 
 
+        // 添加Fungus命令
         static protected void AddCommandCallback(Type commandType)
         {
             var block = curBlock;
