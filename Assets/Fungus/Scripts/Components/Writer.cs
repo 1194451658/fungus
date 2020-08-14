@@ -291,6 +291,9 @@ namespace Fungus
                 {
                     var readAheadToken = tokens[j];
 
+                    // work token的paramList:
+                    //  * 只有一个参数
+                    //  * 就是要显示的文本
                     if (readAheadToken.type == TokenType.Words &&
                         readAheadToken.paramList.Count == 1)
                     {
@@ -535,6 +538,7 @@ namespace Fungus
         }
 
         // 显示文本
+        // paramList: 要显示的文本
         protected virtual IEnumerator DoWords(List<string> paramList, TokenType previousTokenType)
         {
             if (!CheckParamCount(paramList, 1))
@@ -567,6 +571,7 @@ namespace Fungus
             UpdateOpenMarkup();
             UpdateCloseMarkup();
 
+            // 一帧的时间
             float timeAccumulator = Time.deltaTime;
 
             // 遍历文本的
@@ -579,6 +584,7 @@ namespace Fungus
                     break;
                 }
 
+                // 处理，暂停标记
                 // Pause mid sentence if Paused is set
                 while (Paused)
                 {
@@ -587,6 +593,8 @@ namespace Fungus
 
                 // 分割文本
                 // 一个字符一个字符显示，还是一个单词一个单词显示
+                //  * i: 要显示几个字符
+                //  * 注意上面的循环结束是：param.Length + 1
                 PartitionString(writeWholeWords, param, i);
 
                 // 生成最后要显示的文本
@@ -596,6 +604,9 @@ namespace Fungus
                 // 通知文本被更新
                 NotifyGlyph();
 
+                // 是否立刻显示完所有文本
+                //  * 显示文字过程中，是否有输入
+                //  * 并且设置的是，立刻完成！
                 // No delay if user has clicked and Instant Complete is enabled
                 if (instantComplete && inputFlag)
                 {
@@ -612,14 +623,18 @@ namespace Fungus
                 }
 
                 // Delay between characters
+                // 默认一秒写60个字符
                 if (currentWritingSpeed > 0f)
                 {
+                    // 一帧的时间，可以循环几次
                     if (timeAccumulator > 0f)
                     {
                         timeAccumulator -= 1f / currentWritingSpeed;
                     } 
                     else
                     {
+                        // 一帧完成之后，
+                        // 再等待一下
                         yield return new WaitForSeconds(1f / currentWritingSpeed);
                     }
                 }
@@ -627,8 +642,10 @@ namespace Fungus
         }
 
         // 分割文本
-        // 一个字符一个字符显示，还是一个单词一个单词显示
-        // i: 处理inputString中的，第几字符
+        //  * 将要显示的文本，分割成leftString, rightString
+        //  * leftString是当前显示到的文本
+        // wholeWords: 一个字符一个字符显示，还是一个单词一个单词显示
+        // i: 要显示几个字符
         protected virtual void PartitionString(bool wholeWords, string inputString, int i)
         {
             // 处理后，左侧的文本
@@ -660,7 +677,9 @@ namespace Fungus
             }
             else
             {
+                // leftString: 要显示到的字符们
                 leftString.Remove(i, inputString.Length - i);
+                // rightString: 显示字符的，后面剩余的字符们
                 rightString.Remove(0, i);
             }
         }
@@ -968,6 +987,7 @@ namespace Fungus
         /// <param name="onComplete">Callback to call when writing is finished.</param>
         public virtual IEnumerator Write(string content, bool clear, bool waitForInput, bool stopAudio, bool waitForVO, AudioClip audioClip, Action onComplete)
         {
+            // 清空内容
             if (clear)
             {
                 textAdapter.Text = "";

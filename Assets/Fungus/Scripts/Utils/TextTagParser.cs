@@ -15,8 +15,7 @@ namespace Fungus
     // 富文本解析器
     public static class TextTagParser
     {
-        // Q: 后面有个问号是
-        // lazy匹配
+        // 后面有个问号是: lazy匹配
         const string TextTokenRegexString = @"\{.*?\}";
 
         // 添加成Word Token
@@ -287,6 +286,7 @@ namespace Fungus
         {
             List<TextTagToken> tokens = new List<TextTagToken>();
 
+            // @"\{.*?\}";
             Regex myRegex = new Regex(TextTokenRegexString);
 
             Match m = myRegex.Match(storyText);   // m is the first match

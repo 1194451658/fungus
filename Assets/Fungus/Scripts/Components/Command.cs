@@ -293,6 +293,8 @@ namespace Fungus
         /// Return the color for the command background in inspector.
         /// </summary>
         /// <returns>The button color.</returns>
+
+        // 命令颜色
         public virtual Color GetButtonColor()
         {
             return Color.white;
