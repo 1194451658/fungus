@@ -157,7 +157,9 @@ namespace Fungus
             }
         }
         
-        // 设置OpenString
+        // 设置要显示的文本的，富文本标签
+        //  * <size>, <color>, <b>
+        //  * 设置变量OpenString
         protected virtual void UpdateOpenMarkup()
         {
             openString.Length = 0;
@@ -521,6 +523,12 @@ namespace Fungus
                 {
                     break;
                 }
+
+
+                // 最后判断
+
+
+
             }
 
             inputFlag = false;
@@ -537,16 +545,18 @@ namespace Fungus
             }
         }
 
+        // 处理WorkToken
         // 显示文本
-        // paramList: 要显示的文本
+        // paramList[0]: 要显示的文本
         protected virtual IEnumerator DoWords(List<string> paramList, TokenType previousTokenType)
         {
+            // 检查paramList的个数是count
             if (!CheckParamCount(paramList, 1))
             {
                 yield break;
             }
 
-            // 替换\n
+            // 替换文本"\n"
             string param = paramList[0].Replace("\\n", "\n");
 
             //  ----------------------
@@ -568,6 +578,8 @@ namespace Fungus
                 startText = textAdapter.Text.Substring(0, visibleCharacterCount);
             }
                 
+            // 设置要显示的文本的，富文本标签
+            //  * <size>, <color>, <b>
             UpdateOpenMarkup();
             UpdateCloseMarkup();
 
@@ -576,6 +588,7 @@ namespace Fungus
 
             // 遍历文本的
             // 所有字符
+            // param: 要显示的文本
             for (int i = 0; i < param.Length + 1; ++i)
             {
                 // Exit immediately if the exit flag has been set
@@ -875,6 +888,10 @@ namespace Fungus
         }
 
         // 通知Start
+        //  * WriterSignals
+        //      * 居然用这种方法，感觉类似于自己的消息系统了
+        //      * 一种类型消息，写一个类？
+        //  * WriterListener
         protected virtual void NotifyStart(AudioClip audioClip)
         {
             WriterSignals.DoWriterState(this, WriterState.Start);
@@ -1000,12 +1017,15 @@ namespace Fungus
             }
 
             // If this clip is null then WriterAudio will play the default sound effect (if any)
+            // 通知Writer将要开始
             NotifyStart(audioClip);
 
             string tokenText = TextVariationHandler.SelectVariations(content);
             
             if (waitForInput)
             {
+                // Wait For Input缩写！ 
+                //  * 居然，直接用文本！
                 tokenText += "{wi}";
             }
 

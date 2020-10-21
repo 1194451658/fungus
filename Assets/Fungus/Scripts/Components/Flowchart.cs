@@ -195,6 +195,10 @@ namespace Fungus
             version = FungusConstants.CurrentVersion;
         }
 
+
+        // 确定Block和Command，有itemid
+        //  * 有设置
+        //  * 并且时唯一的！
         protected virtual void CheckItemIds()
         {
             // Make sure item ids are unique and monotonically increasing.
@@ -291,6 +295,7 @@ namespace Fungus
             }
         }
 
+        // 在go上，创建Block
         protected virtual Block CreateBlockComponent(GameObject parent)
         {
             Block block = parent.AddComponent<Block>();
@@ -303,6 +308,12 @@ namespace Fungus
         /// Cached list of flowchart objects in the scene for fast lookup.
         /// </summary>
         public static List<Flowchart> CachedFlowcharts { get { return cachedFlowcharts; } }
+
+
+
+        //
+        // Fungus自己的事件系统
+        //
 
         /// <summary>
         /// Sends a message to all Flowchart objects in the current scene.
@@ -471,6 +482,8 @@ namespace Fungus
             return maxId + 1;
         }
 
+        //  在Go上，创建Block
+
         /// <summary>
         /// Create a new block node which you can then add commands to.
         /// </summary>
@@ -565,6 +578,8 @@ namespace Fungus
             }
         }
 
+        //  执行Flowchart下的Block
+
         /// <summary>
         /// Execute a child block in the flowchart.
         /// The block must be in an idle state to be executed.
@@ -573,6 +588,7 @@ namespace Fungus
         /// </summary>
         public virtual bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null)
         {
+            // 参数和情况检查
             if (block == null)
             {
                 Debug.LogError("Block must not be null");
@@ -594,6 +610,8 @@ namespace Fungus
                 return false;
             }
 
+            // 使用协程
+            // 执行Block中的命令
             // Start executing the Block as a new coroutine
             StartCoroutine(block.Execute(commandIndex, onComplete));
 

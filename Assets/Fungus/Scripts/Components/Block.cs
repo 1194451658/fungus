@@ -66,6 +66,9 @@ namespace Fungus
             SetExecutionInfo();
         }
 
+
+        // 设置Block下的各个Command
+
         /// <summary>
         /// Populate the command metadata used to control execution.
         /// </summary>
@@ -81,9 +84,13 @@ namespace Fungus
                 {
                     continue;
                 }
+
+                // 设置Command
                 command.ParentBlock = this;
                 command.CommandIndex = index++;
             }
+
+            // 提到，运行时，动态添加Commanad
 
             // Ensure all commands are at their correct indent level
             // This should have already happened in the editor, but may be necessary
@@ -198,6 +205,8 @@ namespace Fungus
             StartCoroutine(Execute());
         }
 
+        // Block开始执行命令
+
         /// <summary>
         /// A coroutine method that executes all commands in the Block. Only one running instance of each Block is permitted.
         /// </summary>
@@ -211,17 +220,22 @@ namespace Fungus
                 yield break;
             }
 
+            // 结束回调
             lastOnCompleteAction = onComplete;
 
             if (!executionInfoSet)
             {
+                // 设置Block下的各个Command
                 SetExecutionInfo();
             }
 
+            // 此Block运行了几次
             executionCount++;
             var executionCountAtStart = executionCount;
 
             var flowchart = GetFlowchart();
+
+            // 设置为执行状态
             executionState = ExecutionState.Executing;
             BlockSignals.DoBlockStart(this);
 
@@ -235,14 +249,17 @@ namespace Fungus
             }
             #endif
 
+            // 要执行哪个命令
             jumpToCommandIndex = commandIndex;
 
             int i = 0;
             while (true)
             {
-                // 从jumpToCommandIndex获取
-                // 下一个要执行的命令
+                // 从jumpToCommandIndex确定， 下一个要执行的命令
                 // Executing commands specify the next command to skip to by setting jumpToCommandIndex using Command.Continue()
+
+                // 把jumpToCommandIndex传给i
+                //  * i: 真正要执行的命令index
                 if (jumpToCommandIndex > -1)
                 {
                     i = jumpToCommandIndex;
