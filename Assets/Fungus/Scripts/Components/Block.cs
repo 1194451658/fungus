@@ -341,10 +341,14 @@ namespace Fungus
                 command.IsExecuting = false;
             }
 
+            // 只有2个状态
+            //  * 空闲和执行中
             if(State == ExecutionState.Executing &&
                 //ensure we aren't dangling from a previous stopage and stopping a future run
                 executionCountAtStart == executionCount)
             {
+                // 结束执行
+                //  * 回到空闲状态
                 ReturnToIdle();
             }
         }

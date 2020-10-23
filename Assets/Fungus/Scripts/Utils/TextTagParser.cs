@@ -282,6 +282,8 @@ namespace Fungus
         /// <summary>
         /// Processes a block of story text and converts it to a list of tokens.
         /// </summary>
+
+        // 将要说的文本，Token化！
         public static List<TextTagToken> Tokenize(string storyText)
         {
             List<TextTagToken> tokens = new List<TextTagToken>();

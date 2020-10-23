@@ -95,6 +95,7 @@ namespace Fungus
         /// </summary>
         public TokenType type = TokenType.Invalid;
 
+        // 只有一个参数，就是，要显示的文本
         /// <summary>
         /// List of comma separated parameters.
         /// </summary>

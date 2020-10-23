@@ -97,7 +97,8 @@ namespace Fungus.EditorUtils
                 return;
             }
 
-            // 创建BlockEditor
+            // 创建BlockEditor!!!!
+            //  * 这里的是，BlockEditorInspector
             if (activeBlockEditor == null ||
                 !block.Equals(activeBlockEditor.target))
             {
@@ -109,17 +110,24 @@ namespace Fungus.EditorUtils
 
             float width = EditorGUIUtility.currentViewWidth;
 
+            // 画Inspector的上部
             blockScrollPos = GUILayout.BeginScrollView(blockScrollPos, GUILayout.Height(flowchart.BlockViewHeight));
+            {
+                // Block Name: 
+                //  * 显示Block名称
+                activeBlockEditor.DrawBlockName(flowchart);
 
-            // 显示Block名称
-            activeBlockEditor.DrawBlockName(flowchart);
+                // 显示Inspector上方的
+                // Block的界面
+                activeBlockEditor.DrawBlockGUI(flowchart);
 
-            // 显示Inspector上方的
-            // Block的界面
-            activeBlockEditor.DrawBlockGUI(flowchart);
-            GUILayout.EndScrollView();
+                GUILayout.EndScrollView();
+            }
+
 
             Command inspectCommand = null;
+
+            // 只能编辑一个命令
             if (flowchart.SelectedCommands.Count == 1)
             {
                 inspectCommand = flowchart.SelectedCommands[0];
