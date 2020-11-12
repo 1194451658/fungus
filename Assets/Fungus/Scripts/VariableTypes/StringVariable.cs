@@ -13,9 +13,16 @@ namespace Fungus
     [System.Serializable]
     public class StringVariable : VariableBase<string>
     {
-        public static readonly CompareOperator[] compareOperators = { CompareOperator.Equals, CompareOperator.NotEquals };
-        public static readonly SetOperator[] setOperators = { SetOperator.Assign };
+        public static readonly CompareOperator[] compareOperators = {
+            CompareOperator.Equals,
+            CompareOperator.NotEquals 
+        };
 
+        public static readonly SetOperator[] setOperators = {
+            SetOperator.Assign 
+        };
+
+        // 执行，比较操作
         public virtual bool Evaluate(CompareOperator compareOperator, string stringValue)
         {
             string lhs = Value;
@@ -39,6 +46,7 @@ namespace Fungus
             return condition;
         }
 
+        // 执行，赋值操作
         public override void Apply(SetOperator setOperator, string value)
         {
             switch (setOperator)
@@ -58,13 +66,22 @@ namespace Fungus
     /// Appears as a single line property in the inspector.
     /// For a multi-line property, use StringDataMulti.
     /// </summary>
+
+    // 用来
+    //  * 引用一个StringVariable变量
+    //  * 或者，直接引用一个字符串常量
     [System.Serializable]
     public struct StringData
     {
         [SerializeField]
+
+        // VariableProperty标记：
+        //  * 类型
+        //  * 默认值
         [VariableProperty("<Value>", typeof(StringVariable))]
         public StringVariable stringRef;
 
+        // 值
         [SerializeField]
         public string stringVal;
 
@@ -74,6 +91,7 @@ namespace Fungus
             stringRef = null;
         }
         
+        // 转换成字符串
         public static implicit operator string(StringData spriteData)
         {
             return spriteData.Value;
@@ -84,6 +102,9 @@ namespace Fungus
             get 
             { 
                 if (stringVal == null) stringVal = "";
+
+                // 优先返回，字符串变量的值
+                //  返回，常量的值
                 return (stringRef == null) ? stringVal : stringRef.Value; 
             }
             set { if (stringRef == null) { stringVal = value; } else { stringRef.Value = value; } }
@@ -114,6 +135,7 @@ namespace Fungus
         [VariableProperty("<Value>", typeof(StringVariable))]
         public StringVariable stringRef;
 
+        // 区别是，使用的是TextArea
         [TextArea(1,15)]
         [SerializeField]
         public string stringVal;

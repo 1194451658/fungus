@@ -22,6 +22,10 @@ namespace Fungus
         //  * Components/Variable.cs中定义
         //  * Variable : MonoBehaviour
         //  定义和管理的变量
+
+        // Variable是MonoBehaviour
+        //  * 所以，保存还是在flowchart上
+        //  * 这里，只是引用
         Dictionary<string, Variable> variables = new Dictionary<string, Variable>();
 
         void Awake()

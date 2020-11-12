@@ -57,6 +57,8 @@ namespace Fungus
 
             if (targetBlock != null)
             {
+                // 如果目标block，是自己
+                //  * 则，从命令0，开始重头执行
                 // Check if calling your own parent block
                 if (ParentBlock != null && ParentBlock.Equals(targetBlock))
                 {
@@ -65,6 +67,8 @@ namespace Fungus
                     return;
                 }
 
+                // target block如果已经执行中
+                //  * 报warning错！
                 if(targetBlock.IsExecuting())
                 {
                     Debug.LogWarning(targetBlock.BlockName + " cannot be called/executed, it is already running.");
@@ -74,10 +78,14 @@ namespace Fungus
 
                 // Callback action for Wait Until Finished mode
                 Action onComplete = null;
+
+                // 等待命令执行完成，并继续的模式
                 if (callMode == CallMode.WaitUntilFinished)
                 {
                     onComplete = delegate {
+                        // 选中当前命令的block
                         flowchart.SelectedBlock = ParentBlock;
+                        // 并继续播放
                         Continue();
                     };
                 }

@@ -30,10 +30,14 @@ namespace Fungus
         }
         
         // 添加{} Token
+        // tagText: 就是例如{color=red}
         private static void AddTagToken(List<TextTagToken> tokenList, string tagText)
         {
             // 检查
             // 最基本格式
+            //  * 最少3个字符，{, } 是2个
+            //  * 最左边是{
+            //  * 最右边是}
             if (tagText.Length < 3 ||
                 tagText.Substring(0,1) != "{" ||
                 tagText.Substring(tagText.Length - 1,1) != "}")
@@ -41,12 +45,14 @@ namespace Fungus
                 return;
             }
             
+            // 去除，括号{, }之后的内容
+            // 例如：{color=red}，处理之后的，color=red
             string tag = tagText.Substring(1, tagText.Length - 2);
             
             var type = TokenType.Invalid;
 
-            // 根据等号、逗号，
-            // 分割到参数
+            //  获得参数
+            //  根据，等号=分割之后，逗号分割
             List<string> parameters = ExtractParameters(tag);
             
             // 粗体
@@ -218,7 +224,8 @@ namespace Fungus
         }
 
         //
-        // 使用等号，逗号，进行分割后
+        //  获得参数
+        //  根据，等号=分割之后，逗号分割
         //
         private static List<string> ExtractParameters(string input)
         {
@@ -298,6 +305,9 @@ namespace Fungus
             {
                 // Get bit leading up to tag
                 string preText = storyText.Substring(position, m.Index - position);
+
+                // tagText: 就是包含括号的内容，
+                //  * 例如："{color=red}"
                 string tagText = m.Value;
 
                 // {}Token之前的文本

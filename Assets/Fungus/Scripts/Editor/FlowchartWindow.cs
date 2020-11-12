@@ -655,6 +655,7 @@ namespace Fungus.EditorUtils
 
             DeleteBlocks();
 
+            // 感觉像是，和搜索Block相关
             UpdateFilteredBlocks();
 
             HandleEarlyEvents(Event.current);
@@ -1441,19 +1442,23 @@ namespace Fungus.EditorUtils
 
             var connectedBlocks = new List<Block>();
 
+            // block是否被选中
             bool blockIsSelected = flowchart.SelectedBlock == block;
-
 
             Rect scriptViewRect = CalcFlowchartWindowViewRect();
 
             var commandList = block.CommandList;
+
+            // 遍历block中的，命令列表
             foreach (var command in commandList)
             {
                 if (command == null)
                 {
                     continue;
                 }
-
+                
+                // command是否被选中
+                //  * 选中的command，连线时，线会变绿
                 bool commandIsSelected = false;
                 var selectedCommands = flowchart.SelectedCommands;
                 foreach (var selectedCommand in selectedCommands)
@@ -1465,16 +1470,18 @@ namespace Fungus.EditorUtils
                     }
                 }
 
+                // 是否高亮
                 bool highlight = command.IsExecuting || (blockIsSelected && commandIsSelected);
 
+                // 遍历相连的Block
                 connectedBlocks.Clear();
                 command.GetConnectedBlocks(ref connectedBlocks);
 
                 foreach (var blockB in connectedBlocks)
                 {
                     if (blockB == null ||
-                        block == blockB ||
-                        !blockB.GetFlowchart().Equals(flowchart))
+                        block == blockB ||  // 跳过，Block自己，连接自己情况
+                        !blockB.GetFlowchart().Equals(flowchart))   // 跳过，不是本flowchart的block
                     {
                         continue;
                     }
@@ -1493,6 +1500,8 @@ namespace Fungus.EditorUtils
                     boundRect.yMin = Mathf.Min(startRect.yMin, endRect.yMin);
                     boundRect.yMax = Mathf.Max(startRect.yMax, endRect.yMax);
 
+                    // 判断连线，
+                    // 是否在视图区域中
                     if (boundRect.Overlaps(scriptViewRect))
                         DrawRectConnection(startRect, endRect, highlight);
                 }
@@ -1844,6 +1853,9 @@ namespace Fungus.EditorUtils
             var graphics = new BlockGraphics();
 
             Color defaultTint;
+
+            // 如果Block上，有事件
+            //  * 例如：Start等
             if (block._EventHandler != null)
             {
                 graphics.offTexture = FungusEditorResources.EventNodeOff;
@@ -1865,6 +1877,8 @@ namespace Fungus.EditorUtils
                     uniqueList.Add(connectedBlock);
                 }
 
+                // 根据连接的个数，改变颜色
+                //  Q: 是出的连接？
                 if (uniqueList.Count > 1)
                 {
                     graphics.offTexture = FungusEditorResources.ChoiceNodeOff;
@@ -1879,6 +1893,7 @@ namespace Fungus.EditorUtils
                 }
             }
 
+            // 是否使用了，自定义颜色！
             graphics.tint = block.UseCustomTint ? block.Tint : defaultTint;
 
             return graphics;
@@ -1900,6 +1915,11 @@ namespace Fungus.EditorUtils
 
             Rect windowRect = new Rect(block._NodeRect);
             windowRect.position += flowchart.ScrollPos;
+
+            //
+            // 忽略，
+            // 在视图范围外边的block
+            //
 
             //skip if outside of view
             if (!scriptViewRect.Overlaps(windowRect))
@@ -1944,6 +1964,8 @@ namespace Fungus.EditorUtils
 
             nodeStyleCopy.normal.background = graphics.offTexture;
             GUI.backgroundColor = graphics.tint;
+
+            // 绘制Block名称
             GUI.Box(windowRect, block.BlockName, nodeStyleCopy);
 
             GUI.backgroundColor = Color.white;

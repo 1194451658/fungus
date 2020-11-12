@@ -157,6 +157,12 @@ namespace Fungus.EditorUtils
 
                 // EventType.contextClick doesn't register since we moved the Block Editor to be inside
                 // a GUI Area, no idea why. As a workaround we just check for right click instead.
+
+                // Event.button: 
+                //  * 0 左键
+                //  * 1 右键
+
+                // 按下右键弹起，出右键菜单
                 if (Event.current.type == EventType.MouseUp &&
                     Event.current.button == 1)
                 {
@@ -668,8 +674,7 @@ namespace Fungus.EditorUtils
             return markdown;
         }
 
-
-
+        // 命令上，右键菜单
         public virtual void ShowContextMenu()
         {
             var block = target as Block;
@@ -696,8 +701,6 @@ namespace Fungus.EditorUtils
                     showPlay = true;
                 }
             }
-
-
 
             CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
 
